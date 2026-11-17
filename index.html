@@ -1,0 +1,2421 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="medo">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Dossiê OP">
+<meta name="theme-color" content="#07090e">
+<title>Dossiê da Ordem - Central do Mestre</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>
+/* --- PALETAS DE TEMAS (MODO NOTURNO / NOIR) --- */
+
+/* Padrão: MEDO (Noir / Cinza-Azulado Brilhante e Branco) */
+:root, html[data-theme="medo"] {
+  --bg-app: #07090e;
+  --panel-app: #0f141d;
+  --border-app: #1e293b;
+  --accent-neon: #e2e8f0;
+  --accent-bright: #38bdf8;
+  --accent-mid: #334155;
+  --text-main: #f8fafc;
+  --muted: #94a3b8;
+  --glow-effect: rgba(56, 189, 248, 0.25);
+  --input: #040609;
+}
+
+/* Roxo - Energia */
+html[data-theme="energia"] {
+  --bg-app: #08050d;
+  --panel-app: #120a1a;
+  --border-app: #2e1065;
+  --accent-neon: #c084fc;
+  --accent-bright: #e879f9;
+  --accent-mid: #7e22ce;
+  --text-main: #f3f4f6;
+  --muted: #a78bfa;
+  --glow-effect: rgba(192, 132, 252, 0.3);
+  --input: #050308;
+}
+
+/* Amarelo - Conhecimento */
+html[data-theme="conhecimento"] {
+  --bg-app: #0a0905;
+  --panel-app: #141109;
+  --border-app: #422006;
+  --accent-neon: #fbbf24;
+  --accent-bright: #fde047;
+  --accent-mid: #b45309;
+  --text-main: #fefce8;
+  --muted: #d97706;
+  --glow-effect: rgba(251, 191, 36, 0.28);
+  --input: #060502;
+}
+
+/* Vermelho - Sangue */
+html[data-theme="sangue"] {
+  --bg-app: #0c0404;
+  --panel-app: #170808;
+  --border-app: #450a0a;
+  --accent-neon: #f87171;
+  --accent-bright: #ef4444;
+  --accent-mid: #991b1b;
+  --text-main: #fef2f2;
+  --muted: #fca5a5;
+  --glow-effect: rgba(239, 68, 68, 0.3);
+  --input: #060202;
+}
+
+/* Morte - Preto com Branco/Prata */
+html[data-theme="morte"] {
+  --bg-app: #050506;
+  --panel-app: #0e0e11;
+  --border-app: #27272a;
+  --accent-neon: #f4f4f5;
+  --accent-bright: #ffffff;
+  --accent-mid: #3f3f46;
+  --text-main: #fafafa;
+  --muted: #a1a1aa;
+  --glow-effect: rgba(255, 255, 255, 0.2);
+  --input: #020203;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Courier New", Courier, "Lucida Sans Typewriter", monospace;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  background: var(--bg-app);
+  color: var(--text-main);
+}
+
+body {
+  padding: 10px 10px 95px 10px;
+  font-size: 15px;
+  line-height: 1.4;
+  -webkit-text-size-adjust: 100%;
+}
+
+.wrap {
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
+#scanline-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.28) 50%);
+  background-size: 100% 4px;
+  opacity: 0.55;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--panel-app);
+  border: 1px solid var(--accent-bright);
+  box-shadow: 0 0 14px var(--glow-effect);
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+
+header h1 {
+  font-size: 1.1rem;
+  color: var(--accent-neon);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  flex: 1;
+  text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding: 0 8px;
+  text-shadow: 0 0 8px var(--glow-effect);
+}
+
+button, select, input, textarea {
+  background: var(--input);
+  color: var(--text-main);
+  border: 1px solid var(--border-app);
+  padding: 9px 11px;
+  border-radius: 6px;
+  font-size: 15px;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+select {
+  padding-right: 8px;
+  width: 100%;
+  text-overflow: ellipsis;
+}
+
+button {
+  font-weight: bold;
+  min-height: 42px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+}
+
+button:active {
+  opacity: 0.75;
+}
+
+.btn-p {
+  background: var(--accent-mid);
+  border-color: var(--accent-bright);
+  color: #fff;
+  box-shadow: 0 0 8px var(--glow-effect);
+}
+
+.btn-s {
+  background: #131822;
+  border-color: var(--border-app);
+  color: var(--accent-neon);
+}
+
+.btn-sm {
+  min-height: 34px;
+  padding: 5px 10px;
+  font-size: 13px;
+}
+
+.btn-red {
+  background: #7f1d1d;
+  border-color: #ef4444;
+  color: #fecaca;
+}
+
+.btn-green {
+  background: #14532d;
+  border-color: #22c55e;
+  color: #bbf7d0;
+}
+
+.view { display: none; }
+.view.active { display: block; }
+
+.card {
+  background: var(--panel-app);
+  border: 1px solid var(--border-app);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.6);
+}
+
+.card h2 {
+  font-size: 0.95rem;
+  color: var(--accent-bright);
+  margin-bottom: 10px;
+  border-bottom: 1px dashed var(--border-app);
+  padding-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.row > label {
+  flex: 1;
+  font-size: 0.85rem;
+  color: var(--muted);
+  padding-right: 8px;
+}
+
+.row > input, .row > select {
+  flex: 2;
+  min-width: 0;
+}
+
+.cols {
+  display: flex;
+  margin-bottom: 6px;
+}
+
+.cols > div {
+  flex: 1;
+  margin-right: 6px;
+}
+
+.cols > div:last-child {
+  margin-right: 0;
+}
+
+.cols label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 2px;
+  text-transform: uppercase;
+}
+
+.cols input, .cols select {
+  width: 100%;
+  padding: 7px 6px;
+}
+
+.btnrow {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.btnrow > * {
+  margin-right: 6px;
+  margin-bottom: 6px;
+}
+
+.tabs {
+  display: flex;
+  background: var(--panel-app);
+  border: 1px solid var(--accent-bright);
+  border-radius: 10px;
+  overflow-x: auto;
+  margin-bottom: 12px;
+  -webkit-overflow-scrolling: touch;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.75);
+}
+
+.tab {
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+  color: var(--muted);
+  padding: 11px 12px;
+  white-space: nowrap;
+  flex: 1;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.tab.active {
+  color: var(--accent-bright);
+  background: var(--input);
+  border-bottom-color: var(--accent-bright);
+  text-shadow: 0 0 6px var(--glow-effect);
+}
+
+.sheet-tab { display: none; }
+.sheet-tab.active { display: block; }
+
+.sub {
+  background: var(--input);
+  border: 1px solid var(--border-app);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.sub.active-turn {
+  border: 2px solid var(--accent-bright);
+  box-shadow: 0 0 12px var(--glow-effect);
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-gap: 10px;
+}
+
+.grid3 {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-gap: 10px;
+}
+
+@media (min-width: 700px) {
+  .grid2 { grid-template-columns: 1fr 1fr; }
+  .grid3 { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+.minis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 8px;
+  margin-bottom: 10px;
+}
+
+.mini {
+  background: var(--input);
+  border: 1px solid var(--border-app);
+  border-radius: 8px;
+  padding: 8px;
+  text-align: center;
+}
+
+.mini small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.mini b {
+  font-size: 1.2rem;
+  color: var(--accent-bright);
+}
+
+.chip {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 0.75rem;
+  margin-right: 4px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.chip-red { background: rgba(153,27,27,0.45); border: 1px solid #ef4444; color: #fca5a5; }
+.chip-orange { background: rgba(154,52,18,0.45); border: 1px solid #f97316; color: #fed7aa; }
+.chip-blue { background: rgba(30,58,138,0.45); border: 1px solid #38bdf8; color: #bae6fd; }
+.chip-ok { background: rgba(20,83,45,0.45); border: 1px solid #22c55e; color: #bbf7d0; }
+
+.rel-row {
+  display: flex;
+  align-items: center;
+  background: var(--panel-app);
+  border: 1px solid var(--border-app);
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+
+.rel-dots {
+  display: flex;
+  margin: 0 10px;
+}
+
+.rel-dot {
+  width: 28px;
+  height: 28px;
+  min-height: 28px;
+  border-radius: 14px;
+  border: 2px solid var(--accent-bright);
+  background: transparent;
+  margin-right: 5px;
+  padding: 0;
+  color: var(--accent-bright);
+  font-size: 14px;
+  line-height: 24px;
+  text-align: center;
+}
+
+.rel-dot.filled {
+  background: var(--accent-bright);
+  color: #000;
+  box-shadow: 0 0 8px var(--glow-effect);
+}
+
+textarea {
+  width: 100%;
+  height: 100px;
+  resize: vertical;
+}
+
+.hint {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+#dice-fab {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  width: 56px;
+  height: 56px;
+  border-radius: 28px;
+  background: var(--accent-mid);
+  border: 2px solid var(--accent-bright);
+  box-shadow: 0 0 15px var(--glow-effect);
+  font-size: 24px;
+  z-index: 900;
+  padding: 0;
+  color: #fff;
+}
+
+#theme-fab {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  width: 52px;
+  height: 52px;
+  border-radius: 26px;
+  background: var(--panel-app);
+  border: 2px solid var(--accent-bright);
+  color: var(--accent-bright);
+  box-shadow: 0 0 15px var(--glow-effect);
+  font-size: 22px;
+  z-index: 950;
+  padding: 0;
+}
+
+#theme-menu {
+  display: none;
+  position: fixed;
+  left: 16px;
+  bottom: 76px;
+  background: var(--panel-app);
+  border: 1px solid var(--accent-bright);
+  border-radius: 10px;
+  padding: 12px;
+  width: 240px;
+  box-shadow: 0 5px 25px rgba(0,0,0,0.95);
+  z-index: 999;
+}
+
+#dice-sheet {
+  display: none;
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  background: var(--panel-app);
+  border-top: 2px solid var(--accent-bright);
+  padding: 12px 14px 16px;
+  z-index: 1000;
+  max-height: 75vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  box-shadow: 0 -10px 30px rgba(0,0,0,0.95);
+}
+
+.dice-main {
+  font-size: 2.6rem;
+  font-weight: bold;
+  text-align: center;
+  line-height: 1.1;
+  margin: 6px 0;
+  color: var(--accent-bright);
+  text-shadow: 0 0 10px var(--glow-effect);
+}
+
+#dice-detail {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+#dice-log {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 8px;
+  max-height: 110px;
+  overflow-y: auto;
+}
+
+#dice-log div {
+  padding: 3px 0;
+  border-bottom: 1px dashed var(--border-app);
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.9);
+  z-index: 2000;
+  padding: 16px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.modal .card {
+  max-width: 640px;
+  margin: 20px auto;
+  border-color: var(--accent-bright);
+}
+
+#toast {
+  position: fixed;
+  left: 50%;
+  top: 60px;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  background: var(--panel-app);
+  border: 1px solid var(--accent-bright);
+  color: var(--accent-neon);
+  padding: 10px 18px;
+  border-radius: 8px;
+  z-index: 3000;
+  display: none;
+  max-width: 90%;
+  text-align: center;
+  box-shadow: 0 0 15px var(--glow-effect);
+  font-weight: bold;
+}
+
+#save-ind {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-right: 8px;
+  white-space: nowrap;
+}
+</style>
+</head>
+<body>
+<div id="scanline-overlay"></div>
+
+<div class="wrap">
+
+  <!-- VISÃO 1: LISTA DE CAMPANHAS -->
+  <div id="view-list" class="view active">
+    <header>
+      <h1>Dossiê da Ordem // Mestre</h1>
+      <button class="btn-p" type="button" data-act="novaCampanha">+ Nova Campanha</button>
+    </header>
+    <div class="card">
+      <div class="hint">Selecione um dossiê de campanha abaixo ou faça backup dos seus dados locais.</div>
+      <button class="btn-s" type="button" data-act="backup" style="width:100%">Exportar / Importar Backup (.json)</button>
+    </div>
+    <div id="camp-list"></div>
+  </div>
+
+  <!-- VISÃO 2: PAINEL DA CAMPANHA -->
+  <div id="view-camp" class="view">
+    <header>
+      <button class="btn-s btn-sm" type="button" data-act="voltar">&larr; Casos</button>
+      <h1 id="camp-title">Campanha</h1>
+      <span id="save-ind">Salvo</span>
+      <button class="btn-p btn-sm" type="button" data-act="salvar">Salvar</button>
+    </header>
+
+    <div class="tabs">
+      <button class="tab active" type="button" data-act="aba" data-arg="combate">1. Combate &amp; Cenas</button>
+      <button class="tab" type="button" data-act="aba" data-arg="bestiario">2. Ameaças</button>
+      <button class="tab" type="button" data-act="aba" data-arg="npcs">3. NPCs &amp; Locais</button>
+      <button class="tab" type="button" data-act="aba" data-arg="investigacao">4. Investigação</button>
+      <button class="tab" type="button" data-act="aba" data-arg="dossie">5. Dossiê &amp; Medo</button>
+    </div>
+
+    <!-- ABA 1: COMBATE, PERSEGUIÇÃO E FURTIVIDADE -->
+    <div id="tab-combate" class="sheet-tab active">
+      <div class="card">
+        <h2>Rastreador de Iniciativa &amp; Combate</h2>
+        <div class="minis">
+          <div class="mini"><small>Rodada</small><b id="comb-rodada">1</b></div>
+          <div class="mini"><small>Turno Atual</small><b id="comb-atual-nome">-</b></div>
+          <div class="mini"><small>Participantes</small><b id="comb-total">0</b></div>
+        </div>
+        <div class="btnrow">
+          <button class="btn-p" type="button" data-act="proxTurno">Próximo Turno &rarr;</button>
+          <button class="btn-s" type="button" data-act="ordenarIni">Ordenar Iniciativa</button>
+          <button class="btn-s" type="button" data-act="addCombatente" data-arg="Agente">+ Agente</button>
+          <button class="btn-s" type="button" data-act="addCombatente" data-arg="Ameaça">+ Ameaça</button>
+          <button class="btn-red btn-sm" type="button" data-act="resetCombate">Resetar</button>
+        </div>
+        <div id="combate-list" style="margin-top:10px"></div>
+      </div>
+
+      <div class="grid2">
+        <!-- RASTREADOR DE PERSEGUIÇÃO -->
+        <div class="card">
+          <h2>Cena de Perseguição (SaH p. 90)</h2>
+          <div class="hint">Teste estendido de Atletismo (DT 15 comum / DT 20 veloz / DT 25+ criatura). Vence quem acumular <b>3 Sucessos</b> antes de <b>3 Falhas</b>.</div>
+          <div class="btnrow">
+            <button class="btn-p btn-sm" type="button" data-act="addPerseg">+ Corredor</button>
+            <button class="btn-s btn-sm" type="button" data-act="rolarEventoPerseg">&#127922; Evento de Perseguição (1d20)</button>
+          </div>
+          <div id="perseg-list" style="margin-top:8px"></div>
+        </div>
+
+        <!-- RASTREADOR DE FURTIVIDADE -->
+        <div class="card">
+          <h2>Cena de Furtividade (SaH p. 92)</h2>
+          <div class="hint">Visibilidade 0 a 2 = Oculto. <b>Visibilidade 3+ = DESCOBERTO!</b> (Esconder/Distrair DT 15 = -1 | Ação Chamativa = +2).</div>
+          <div class="btnrow">
+            <button class="btn-p btn-sm" type="button" data-act="addFurtiv">+ Personagem</button>
+            <button class="btn-s btn-sm" type="button" data-act="resetFurtiv">Zerar Visibilidade</button>
+          </div>
+          <div id="furtiv-list" style="margin-top:8px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABA 2: BESTIÁRIO & AMEAÇAS -->
+    <div id="tab-bestiario" class="sheet-tab">
+      <div class="card">
+        <h2>Catálogo de Ameaças da Realidade (SaH &amp; Livro Base)</h2>
+        <div class="hint">Adicione rapidamente fichas oficiais prontas para rolar dados ou envie-as direto para o Rastreador de Combate.</div>
+        <div class="row">
+          <label>Escolher Ameaça</label>
+          <select id="sel-ameaca-catalogo"></select>
+        </div>
+        <div class="btnrow">
+          <button class="btn-p" type="button" data-act="addAmeacaCatalogo">+ Adicionar do Catálogo</button>
+          <button class="btn-s" type="button" data-act="sortearAmeacaCatalogo">&#127922; Sortear Ameaça Aleatória</button>
+          <button class="btn-s" type="button" data-act="addAmeacaCustom">+ Criar Criatura / Boss Custom</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Ameaças Ativas no Caso</h2>
+        <div id="ameacas-list"></div>
+      </div>
+    </div>
+
+    <!-- ABA 3: NPCS (TABELA 6.2 + ROUPAS + FAIXA ETÁRIA + ATITUDE + HOMEBREW) & LOCAIS -->
+    <div id="tab-npcs" class="sheet-tab">
+      <div class="card">
+        <h2>Gerador de NPCs (Tabela 6.2 p. 165 + Roupas + Atitude)</h2>
+        <div class="hint">Sorteia 3 traços de Aparência e 3 de Personalidade na <b>Tabela 6.2 (2d20)</b> sem contradições, gera <b>Roupas detalhadas</b>, <b>Faixa Etária (1d20, p. 164)</b>, <b>Atitude Inicial (p. 77)</b> e estatísticas.</div>
+        <div class="row">
+          <label>Arquétipo Base</label>
+          <select id="sel-npc-arquetipo"></select>
+        </div>
+        <div class="btnrow">
+          <button class="btn-p" type="button" data-act="gerarNpcAleatorio">&#127922; Gerar NPC Completo (Tab. 6.2 + Roupa)</button>
+          <button class="btn-s" type="button" data-act="rolarTabela62Avulsa">&#128220; Sortear Avulso na Tabela 6.2 (2d20)</button>
+          <button class="btn-s" type="button" data-act="addNpcVazio">+ NPC em Branco</button>
+        </div>
+      </div>
+
+      <div id="npcs-list"></div>
+
+      <div class="card" style="margin-top:14px">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <h2 style="margin:0; border:none; padding:0;">Locais de Interesse</h2>
+          <button class="btn-p btn-sm" type="button" data-act="addLocal">+ Novo Local</button>
+        </div>
+        <div id="locais-list"></div>
+      </div>
+    </div>
+
+    <!-- ABA 4: INVESTIGAÇÃO (CENAS, PISTAS E EVENTOS) -->
+    <div id="tab-investigacao" class="sheet-tab">
+      <div class="card">
+        <h2>Gestão de Cenas de Investigação</h2>
+        <div class="hint">Controle os turnos de urgência de cada cena, marque pistas reveladas e role eventos de investigação (SaH p. 82).</div>
+        <div class="btnrow">
+          <button class="btn-p" type="button" data-act="addCena">+ Nova Cena de Investigação</button>
+          <button class="btn-s" type="button" data-act="rolarEventoInv">&#127922; Rolar Evento de Investigação (2d6)</button>
+        </div>
+      </div>
+      <div id="cenas-list"></div>
+    </div>
+
+    <!-- ABA 5: DOSSIÊ, ESCUDO E GERADORES DE MEDO -->
+    <div id="tab-dossie" class="sheet-tab">
+      <div class="card">
+        <h2>Geradores de Colapso Mental &amp; Medo (1-Click)</h2>
+        <div class="hint">Ao zerar a Sanidade ou sofrer colapso mental, role diretamente nas tabelas oficiais (SaH p. 88 e Livro Base p. 175).</div>
+        <div class="row">
+          <label>Efeitos de medo já sofridos na cena (+1 cada no 2d10)</label>
+          <input type="number" id="mod-medo-cena" value="0" min="0" max="15">
+        </div>
+        <div class="btnrow">
+          <button class="btn-p" type="button" data-act="rolarTabelaMedo">&#128128; Rolar Efeito do Medo (2d10)</button>
+          <button class="btn-s" type="button" data-act="rolarLoucuraNaoLetal">&#129504; Rolar Loucura Não Letal (1d6)</button>
+        </div>
+        <div id="box-ultimo-medo" class="sub" style="display:none; margin-top:8px; border-color:var(--accent-bright);"></div>
+      </div>
+
+      <div class="card">
+        <h2>Dossiê da Campanha</h2>
+        <div class="row"><label>Título do Caso</label><input type="text" id="c-nome" data-cf="nome"></div>
+        <div class="row"><label>Agentes da Equipe (separados por vírgula)</label><input type="text" id="c-agentes" data-cf="agentesEquipe" placeholder="Ex: Arthur, Kaiser, Joui, Erin"></div>
+        <div style="margin-top:8px">
+          <label style="font-size:0.8rem; color:var(--muted); display:block; margin-bottom:4px;">PREMISSA &amp; OBJETIVO DA MISSÃO</label>
+          <textarea id="c-premissa" data-cf="premissa" placeholder="Qual é a verdade oculta por trás do caso?"></textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <h2 style="margin:0; border:none; padding:0;">Diário de Sessões do Mestre</h2>
+          <button class="btn-p btn-sm" type="button" data-act="addSessaoLog">+ Registrar Sessão</button>
+        </div>
+        <div id="sessoes-list"></div>
+      </div>
+
+      <div class="card">
+        <h2>Escudo do Mestre // Colinha Rápida de Regras</h2>
+        <div class="grid2">
+          <div class="sub">
+            <b style="color:var(--accent-bright)">DTs de Perícia Padrão</b><br>
+            • Fácil: <b>DT 10</b> | Média: <b>DT 15</b><br>
+            • Difícil: <b>DT 20</b> | Muito Difícil: <b>DT 25</b><br>
+            • Quase Impossível: <b>DT 30+</b><br><br>
+            <b style="color:var(--accent-bright)">Categorias de Atitude (p. 77)</b><br>
+            • <b>Prestativo:</b> +5 em persuasão contra ele.<br>
+            • <b>Amistoso:</b> Ajuda e faz pequenos favores.<br>
+            • <b>Indiferente:</b> Neutro (padrão).<br>
+            • <b>Inamistoso:</b> –5 em persuasão contra ele.<br>
+            • <b>Hostil:</b> Falha automática; pode atacar/sabotar.
+          </div>
+          <div class="sub">
+            <b style="color:var(--accent-bright)">Estados &amp; Condições Críticas</b><br>
+            • <b>Machucado:</b> PV &le; metade.<br>
+            • <b>Perturbado:</b> SAN &lt; metade.<br>
+            • <b>Morrendo / Enlouquecendo:</b> 0 PV / 0 SAN (3 turnos na cena sem estabilizar DT 15 = morte/insanidade).<br>
+            • <b>Dano Massivo:</b> &ge; metade dos PV máx de uma vez (Fortitude DT 15 +2 por 10 de dano ou cai a 0 PV).<br>
+            • <b>Custo do Paranormal:</b> Ocultismo DT 20 + PE gasto.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- BOTÃO FLUTUANTE DE TEMAS (CANTO ESQUERDO) -->
+<button id="theme-fab" type="button" data-act="themeToggle" title="Mudar Elemento / Tema">&#128065;</button>
+<div id="theme-menu">
+  <div style="font-size: 0.75rem; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border-app); padding-bottom: 4px;">Sintonizar Elemento</div>
+  <button class="btn-s btn-sm" type="button" data-act="mudarTema" data-arg="medo" style="width:100%; margin-bottom:5px; text-align:left; border-left: 4px solid #38bdf8;">&#9898; Medo - Noir Azulado (Padrão)</button>
+  <button class="btn-s btn-sm" type="button" data-act="mudarTema" data-arg="energia" style="width:100%; margin-bottom:5px; text-align:left; border-left: 4px solid #c084fc;">&#128995; Roxo - Energia</button>
+  <button class="btn-s btn-sm" type="button" data-act="mudarTema" data-arg="conhecimento" style="width:100%; margin-bottom:5px; text-align:left; border-left: 4px solid #fbbf24;">&#128993; Amarelo - Conhecimento</button>
+  <button class="btn-s btn-sm" type="button" data-act="mudarTema" data-arg="sangue" style="width:100%; margin-bottom:5px; text-align:left; border-left: 4px solid #f87171;">&#128308; Vermelho - Sangue</button>
+  <button class="btn-s btn-sm" type="button" data-act="mudarTema" data-arg="morte" style="width:100%; margin-bottom:8px; text-align:left; border-left: 4px solid #f4f4f5;">&#128128; Morte - Preto e Branco</button>
+  <button class="btn-p btn-sm" type="button" data-act="toggleScanlines" style="width:100%; text-align:center;">&#128250; Linhas de Dossiê (CRT)</button>
+</div>
+
+<!-- BOTÃO FLUTUANTE DE DADOS (CANTO DIREITO) -->
+<button id="dice-fab" type="button" data-act="diceToggle">&#127922;</button>
+
+<div id="dice-sheet">
+  <div class="btnrow" style="justify-content:space-between; margin-bottom:0;">
+    <h3 id="dice-title" style="color:var(--accent-bright)">Rolador Oculto do Mestre</h3>
+    <button class="btn-s btn-sm" type="button" data-act="diceFechar">Fechar</button>
+  </div>
+  <div class="dice-main" id="dice-main">-</div>
+  <div id="dice-detail"></div>
+  <div class="btnrow" id="dice-extra" style="justify-content:center;"></div>
+  <div class="row" style="margin-top:6px">
+    <input type="text" id="free-expr" value="2d20+5" style="flex:3; margin-right:8px;" placeholder="Ex: 3d20+10 ou 4d8+12" autocapitalize="off" autocorrect="off">
+    <button class="btn-p" type="button" data-act="rolarLivre" style="flex:1">RolarSoma</button>
+    <button class="btn-s" type="button" data-act="rolarTesteLivre" style="flex:1; margin-left:4px;">Teste(d20)</button>
+  </div>
+  <div class="btnrow">
+    <button class="btn-s btn-sm" type="button" data-act="rapidoTeste" data-arg="1d20+5">1d20+5</button>
+    <button class="btn-s btn-sm" type="button" data-act="rapidoTeste" data-arg="2d20+10">2d20+10</button>
+    <button class="btn-s btn-sm" type="button" data-act="rapidoTeste" data-arg="3d20+15">3d20+15</button>
+    <button class="btn-s btn-sm" type="button" data-act="rapidoDano" data-arg="2d6+5">2d6+5</button>
+    <button class="btn-s btn-sm" type="button" data-act="rapidoDano" data-arg="3d8+10">3d8+10</button>
+    <button class="btn-s btn-sm" type="button" data-act="rapidoDano" data-arg="2d10">2d10</button>
+  </div>
+  <div id="dice-log"></div>
+</div>
+
+<!-- MODAL DE EVENTOS E TABELAS -->
+<div id="info-modal" class="modal">
+  <div class="card">
+    <h2 id="info-modal-title">Resultado</h2>
+    <div id="info-modal-body" style="font-size:0.95rem; line-height:1.5; margin:12px 0;"></div>
+    <button class="btn-p" type="button" data-act="fecharInfo" style="width:100%">Fechar</button>
+  </div>
+</div>
+
+<!-- MODAL DE MÚLTIPLAS CONDIÇÕES -->
+<div id="cond-modal" class="modal">
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <h2 id="cond-modal-title" style="margin:0; border:none; padding:0;">Condições do Ser</h2>
+      <button class="btn-s btn-sm" type="button" data-act="fecharCondModal">Fechar</button>
+    </div>
+    <p class="hint">Toque nas condições para ativar ou desativar quantas quiser. Regras de acúmulo (ex: 2x Abalado = Apavorado) são aplicadas quando adicionadas pelo seletor rápido.</p>
+    <div id="cond-modal-grid" class="grid2" style="max-height:60vh; overflow-y:auto; padding:4px 0;"></div>
+    <div class="btnrow" style="margin-top:12px; margin-bottom:0;">
+      <button class="btn-red btn-sm" type="button" data-act="limparCondsModal" style="flex:1;">Limpar Todas</button>
+      <button class="btn-p btn-sm" type="button" data-act="fecharCondModal" style="flex:2;">Concluir</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE BACKUP -->
+<div id="backup-modal" class="modal">
+  <div class="card">
+    <h2>Backup das Campanhas (.json)</h2>
+    <p class="hint">Para iOS 12: Use <b>Copiar</b> ou <b>Compartilhar</b> e salve no app Notas. Para restaurar, cole o JSON abaixo e toque em Restaurar.</p>
+    <textarea id="backup-text" style="height:160px; font-size:12px; margin-bottom:10px;"></textarea>
+    <div class="btnrow">
+      <button class="btn-p" type="button" data-act="bkCopy">Copiar Texto</button>
+      <button class="btn-s" type="button" data-act="bkShare">Compartilhar</button>
+    </div>
+    <div class="row" style="margin-top:6px"><label>Ou importar arquivo .json</label><input type="file" id="bk-file" accept=".json,application/json,text/plain"></div>
+    <div class="btnrow">
+      <button class="btn-p" type="button" data-act="bkImport">Restaurar do Texto</button>
+      <button class="btn-s" type="button" data-act="bkClose">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function () {
+'use strict';
+
+if (!Element.prototype.matches) {
+  Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
+}
+if (!Element.prototype.closest) {
+  Element.prototype.closest = function (s) {
+    var el = this;
+    do {
+      if (Element.prototype.matches.call(el, s)) return el;
+      el = el.parentElement || el.parentNode;
+    } while (el !== null && el.nodeType === 1);
+    return null;
+  };
+}
+
+var KEY = 'dossie_mestre_op_v1';
+
+/* --- 1. CATÁLOGO OFICIAL DE AMEAÇAS DA REALIDADE --- */
+var CATALOGO_AMEACAS = [
+  {
+    nome: "Bêbado Local", vd: 10, ref: "SaH p. 158", pv: 6, def: 12,
+    pericias: [{n:"Diplomacia", r:"1d20+5"}, {n:"Percepção", r:"-2d20+5"}],
+    ataques: [{n:"Soco", t:"1d20+0", d:"1d3+1", obs:"Impacto"}],
+    notas: "Machucado: 3 PV."
+  },
+  {
+    nome: "Burocrata", vd: 10, ref: "SaH p. 158", pv: 6, def: 11,
+    pericias: [{n:"Diplomacia", r:"2d20+5"}, {n:"Profissão", r:"2d20+10"}],
+    ataques: [{n:"Improvisado", t:"1d20+0", d:"1d3+1", obs:"Impacto"}],
+    notas: "Machucado: 3 PV."
+  },
+  {
+    nome: "Fazendeiro Isolado", vd: 20, ref: "SaH p. 159", pv: 16, def: 16,
+    pericias: [{n:"Profissão", r:"1d20+10"}, {n:"Percepção", r:"2d20+5"}],
+    ataques: [{n:"Espingarda / Machado", t:"2d20+5", d:"2d6+2", obs:"Arma civil"}],
+    notas: "Machucado: 8 PV. De Sol a Sol: Não cai inconsciente ao ficar com 0 PV."
+  },
+  {
+    nome: "Investigador", vd: 40, ref: "SaH p. 159", pv: 68, def: 18,
+    pericias: [{n:"Investigação", r:"2d20+10"}, {n:"Percepção", r:"2d20+5"}, {n:"Iniciativa", r:"2d20+5"}],
+    ataques: [
+      {n:"Soco", t:"1d20+10", d:"1d3+1", obs:"Impacto"},
+      {n:"Revólver", t:"2d20+10", d:"2d6+6", obs:"Crít 19/x3 balístico"}
+    ],
+    notas: "Machucado: 34 PV."
+  },
+  {
+    nome: "Médico", vd: 20, ref: "SaH p. 160", pv: 16, def: 14,
+    pericias: [{n:"Medicina", r:"2d20+10"}, {n:"Ciências", r:"2d20+10"}, {n:"Percepção", r:"2d20+5"}],
+    ataques: [
+      {n:"Bisturi", t:"1d20+5", d:"1d4+1", obs:"Corte"},
+      {n:"Tratar Ferimentos (Cura)", t:"2d20+10", d:"2d10+2", obs:"Cura PV"}
+    ],
+    notas: "Machucado: 8 PV."
+  },
+  {
+    nome: "Religioso", vd: 40, ref: "SaH p. 160", pv: 40, def: 15,
+    pericias: [{n:"Diplomacia", r:"3d20+10"}, {n:"Religião", r:"3d20+10"}],
+    ataques: [
+      {n:"Pancada", t:"1d20+5", d:"1d3+1", obs:"Impacto"},
+      {n:"Voz Acusadora", t:"3d20+10", d:"3d6", obs:"Mental + Alquebrado (Vontade DT 15 reduz metade)"}
+    ],
+    notas: "Machucado: 20 PV. Acompanhado de 1d4+1 iniciados."
+  },
+  {
+    nome: "Predador Sofisticado (Serial Killer)", vd: 80, ref: "SaH p. 161", pv: 60, def: 21,
+    pericias: [{n:"Diplomacia", r:"3d20+10"}, {n:"Enganação", r:"3d20+10"}, {n:"Intimidação", r:"3d20+10"}],
+    ataques: [{n:"Arma Dissimulada", t:"3d20+10", d:"1d6+5", obs:"Corte/Perfuração"}],
+    notas: "Machucado: 30 PV. Convoca 1d4+1 capangas."
+  },
+  {
+    nome: "Caçador de Gente (Serial Killer)", vd: 80, ref: "SaH p. 162", pv: 80, def: 23,
+    pericias: [{n:"Atletismo", r:"3d20+10"}, {n:"Sobrevivência", r:"1d20+10"}],
+    ataques: [
+      {n:"Pancada (x2)", t:"3d20+15", d:"1d4+15", obs:"Impacto"},
+      {n:"Machado (x2)", t:"3d20+15", d:"2d8+15", obs:"Crít x3 corte"}
+    ],
+    notas: "Machucado: 40 PV (Recebe RD 10 enquanto machucado, exceto paranormal)."
+  },
+  {
+    nome: "Artista da Morte (Serial Killer)", vd: 140, ref: "SaH p. 162", pv: 150, def: 27,
+    pericias: [{n:"Artes", r:"3d20+15"}, {n:"Enganação", r:"3d20+15"}, {n:"Furtividade", r:"3d20+15"}],
+    ataques: [
+      {n:"Bisturi (x2)", t:"3d20+15", d:"1d4+17", obs:"Crít 19/x4 corte"},
+      {n:"Bisturi + Ataque Furtivo", t:"3d20+15", d:"1d4+17+7d6", obs:"Contra alvo desprevenido/flanqueado"}
+    ],
+    notas: "Machucado: 75 PV. Matar É uma Arte: Usa Artes no lugar de qualquer perícia."
+  },
+  {
+    nome: "Bandido", vd: 10, ref: "LB p. 284", pv: 8, def: 14,
+    pericias: [{n:"Crime", r:"2d20+5"}, {n:"Furtividade", r:"2d20+5"}],
+    ataques: [{n:"Faca (+1d6 Furtivo)", t:"2d20+5", d:"1d4+2+1d6", obs:"Perfuração"}],
+    notas: "Machucado: 4 PV."
+  },
+  {
+    nome: "Capanga", vd: 20, ref: "LB p. 284", pv: 17, def: 13,
+    pericias: [{n:"Intimidação", r:"1d20+5"}],
+    ataques: [
+      {n:"Bastão", t:"2d20+5", d:"1d8+7", obs:"Impacto"},
+      {n:"Revólver (+2d6 Furtivo)", t:"1d20+5", d:"2d6+5+2d6", obs:"Crít 19/x3 balístico"}
+    ],
+    notas: "Machucado: 8 PV."
+  },
+  {
+    nome: "Soldado de Aluguel", vd: 40, ref: "LB p. 284", pv: 25, def: 18,
+    pericias: [{n:"Iniciativa", r:"2d20+10"}],
+    ataques: [
+      {n:"Machete", t:"2d20+10", d:"1d6+9", obs:"Crít 19 corte"},
+      {n:"Fuzil de Assalto", t:"2d20+10", d:"2d8+9", obs:"Crít 19/x3 balístico"}
+    ],
+    notas: "Machucado: 12 PV."
+  },
+  {
+    nome: "Iniciado / Cultista", vd: 20, ref: "LB p. 286", pv: 12, def: 15,
+    pericias: [{n:"Ocultismo", r:"2d20+5"}],
+    ataques: [
+      {n:"Faca", t:"2d20+5", d:"1d4+1", obs:"Crít 19"},
+      {n:"Revólver", t:"2d20+0", d:"2d6", obs:"Crít 19/x3"}
+    ],
+    notas: "Machucado: 6 PV. Rituais: DT 17."
+  },
+  {
+    nome: "Policial", vd: 20, ref: "LB p. 287", pv: 15, def: 19,
+    pericias: [{n:"Percepção", r:"1d20+5"}, {n:"Iniciativa", r:"2d20+5"}],
+    ataques: [
+      {n:"Bastão", t:"2d20+5", d:"1d8+7", obs:"Impacto"},
+      {n:"Pistola", t:"2d20+5", d:"1d12+5", obs:"Crít 18 balístico"}
+    ],
+    notas: "Machucado: 7 PV."
+  }
+];
+
+/* --- 2. TABELA 2.2: EFEITOS DO MEDO (SaH pp. 88-89) --- */
+var TABELA_MEDO = {
+  2: {n:"Encorajamento", d:"Recupera 1 SAN por 5% de NEX e ganha +1d20 em um teste à escolha até o fim da cena."},
+  3: {n:"Surto de Adrenalina", d:"+5 em testes de ataque e rolagens de dano na cena; fazer outra ação exige Vontade DT 20 ou perde a ação."},
+  4: {n:"Hesitação", d:"Balbucia e vacila; fica Atordoado por 1 rodada."},
+  5: {n:"Fraqueza", d:"Começa a passar mal, suar ou vomitar; fica Fraco (–1d20 em Agi, For e Vig)."},
+  6: {n:"Lapso", d:"Memória recente com mais de 1 hora fica nebulosa; fica Frustrado (–1d20 em Int e Pre)."},
+  7: {n:"Ansiedade", d:"Falha automaticamente no próximo teste (pode gastar uma ação padrão em ação inútil para limpar)."},
+  8: {n:"Desorientação", d:"Dificuldade de se situar; fica Desprevenido (–5 Defesa e –1d20 em Reflexos)."},
+  9: {n:"Desespero", d:"Tristeza avassaladora e impotência; falha automaticamente em qualquer teste de Vontade."},
+  10: {n:"Histeria", d:"Ri ou chora descontroladamente por 1d4 rodadas; sofre –1d20 em todos os testes."},
+  11: {n:"Abalo", d:"Tremedeira incontrolável; fica Abalado (–1d20 em testes; se ficar de novo, vira Apavorado)."},
+  12: {n:"Alucinação", d:"Vê sombras se mexendo e vozes monstruosas; em qualquer teste, se o maior d20 for ímpar, falha automaticamente."},
+  13: {n:"Susto", d:"Fica Apavorado (–2d20 em testes e precisa fugir da fonte do medo)."},
+  14: {n:"Confusão", d:"Perde o controle das ações e fica Confuso (rola 1d6 no início de cada turno)."},
+  15: {n:"Paralisia", d:"Fica Paralisado por 1d4 rodadas e depois Abalado."},
+  16: {n:"Pavor", d:"Entra em pânico: gasta todas as ações para fugir; ações de concentração têm 50% de falha; se não puder fugir, encolhe-se sem agir."},
+  17: {n:"Desmaio", d:"A mente se desliga para se proteger; cai Inconsciente."},
+  18: {n:"Trauma", d:"Paralisado por 1d4 rodadas e rola 1d6: de 1 a 5 perde 1 ponto permanente de atributo (1: Agi, 2: For, 3: Int, 4: Pre, 5: Vig); em 6, não perde."},
+  19: {n:"Loucura", d:"Fica Enlouquecendo (precisa ser estabilizado antes de 3 turnos ou torna-se um NPC insano)."},
+  20: {n:"Choque Sistêmico", d:"O corpo entra em colapso/parada cardiorrespiratória; fica com 0 PV e Morrendo."}
+};
+
+/* --- 3. LOUCURA NÃO LETAL (Livro Básico p. 175) --- */
+var TABELA_LOUCURA_NL = [
+  "1. A culpa é toda sua: O personagem se martiriza e aceita qualquer punição como merecida.",
+  "2. Euforia catatônica: Entra em torpor mental contemplativo e alheio.",
+  "3. Alucinações: Vivencia aparições constantes de amigos ou inimigos mortos.",
+  "4. Fúria Homicida: +2 em ataque e dano corpo a corpo, mas exige Vontade (DT 20 + 5/teste) no início da cena ou ataca qualquer um à vista.",
+  "5. Amnésia Paranormal: Perde memórias e poderes de classe; rola 1d6 para cada perícia/proficiência (ímpar = esquece).",
+  "6. Descontrole Mortal: No início de cada cena ou rodada, rola 1d6; se for ímpar, gasta o turno atacando a si mesmo."
+];
+
+/* --- 4. EVENTOS DE INVESTIGAÇÃO (2d6, SaH pp. 82-83) --- */
+var TABELA_EVENTOS_INV = {
+  2: {n:"Indício Traumático", d:"Deparam-se com algo chocante. Teste de Presença (DT 15); quem falhar perde uma ação no próximo interlúdio."},
+  3: {n:"Atenção Inesperada", d:"Alarme dispara ou vizinho/cão interrompe. Um agente precisa gastar sua ação para conter a distração, senão a urgência diminui em 1 rodada."},
+  4: {n:"Lembrança Opressiva", d:"Pressão psicológica extrema. Cada personagem que falhar em uma ação de investigação perde 1 PE até o fim da cena."},
+  5: {n:"Momento de Tensão", d:"Um susto mundano (queda de objeto, luz piscando). Todos sofrem 1d4 de dano mental (Vontade DT 15 evita)."},
+  6: {n:"Sem Evento", d:"A investigação prossegue normalmente no silêncio inquietante."},
+  7: {n:"Sem Evento", d:"A investigação prossegue normalmente."},
+  8: {n:"Sem Evento", d:"A investigação prossegue normalmente."},
+  9: {n:"Distração", d:"Pista falsa ou curiosidade mórbida. Um personagem aleatório sofre –1d20 em testes nesta rodada."},
+  10: {n:"Ferimento", d:"Um agente se machuca procurando pistas. Sofre –2 em testes de um atributo aleatório (1d10) até ser tratado (Medicina DT 20) ou dormir."},
+  11: {n:"Complicação", d:"Queda de luz ou estante tombada. Todos sofrem –1d20 em testes até que um agente gaste ação e vença teste apropriado DT 20."},
+  12: {n:"Pista Extra / Revelação", d:"Um evento fortuito revela um detalhe adicional gratuito sobre o caso!"}
+};
+
+/* --- 5. TABELA 6.2 OFICIAL: CARACTERÍSTICAS DESCRITIVAS (2d20, p. 165) + FAIXA ETÁRIA (p. 164) + ROUPAS --- */
+var NOMES_NPC = ["Carlos", "Helena", "Marcos", "Beatriz", "Roberto", "Camila", "Vicente", "Lúcia", "Eduardo", "Tereza", "Jonas", "Fernanda", "Otávio", "Clara", "Sérgio", "Mariana", "Valdir", "Irene", "Henrique", "Bárbara"];
+var SOBRENOMES_NPC = ["Silva", "Boeira", "Montenegro", "Vargas", "Almeida", "Cavalcanti", "Ribeiro", "Kowalski", "Medeiros", "Ferreira", "Peixoto", "Castilho", "Moraes", "Dantas", "Fontes", "Nogueira"];
+
+// Tabela 6.2 com grupos de exclusão mútua (p. 165) para descartar contradições automaticamente
+var TABELA_62 = {
+  2:  {ap: "Caolho", gAp: "olhos", pe: "Muito religioso, cita passagens sagradas", gPe: "crenca"},
+  3:  {ap: "Marcas de queimadura na pele", gAp: "", pe: "Segue as leis ao pé da letra", gPe: "lei"},
+  4:  {ap: "Sardas no rosto", gAp: "", pe: "Não consegue decorar nomes próprios", gPe: ""},
+  5:  {ap: "Nariz torto ou quebrado", gAp: "nariz", pe: "Está sempre arrumando o cabelo", gPe: ""},
+  6:  {ap: "Cabelos coloridos (lilás, anil…)", gAp: "cabelo_cor", pe: "Enérgico, não deixa ninguém ficar parado", gPe: "energia"},
+  7:  {ap: "Gago", gAp: "fala", pe: "Romântico e acredita no bem de todos", gPe: "visao"},
+  8:  {ap: "Rosto de traços delicados", gAp: "rosto", pe: "Ansioso e rói unhas", gPe: "calma"},
+  9:  {ap: "Olheiras profundas", gAp: "", pe: "Metódico e perfeccionista", gPe: "metodo"},
+  10: {ap: "Postura encurvada", gAp: "postura", pe: "Se irrita facilmente e não leva desaforo pra casa", gPe: "paciencia"},
+  11: {ap: "Usa roupas velhas, desbotadas ou esfarrapadas", gAp: "roupa_tab", pe: "Observador e curioso", gPe: "atencao"},
+  12: {ap: "Muito baixo", gAp: "altura", pe: "Ambicioso e calculista", gPe: "visao"},
+  13: {ap: "Nariz grande", gAp: "nariz", pe: "Simpático e festeiro", gPe: "social"},
+  14: {ap: "Cicatriz no rosto", gAp: "", pe: "Pensativo e distraído", gPe: "atencao"},
+  15: {ap: "Acima do peso", gAp: "peso", pe: "Respeitoso e educado", gPe: "educacao"},
+  16: {ap: "Baixo", gAp: "altura", pe: "Cuidadoso, pensa antes de falar", gPe: "impulso"},
+  17: {ap: "Tatuagens pequenas", gAp: "tatuagem", pe: "Corajoso", gPe: "coragem"},
+  18: {ap: "Rosto angular e elegante", gAp: "rosto", pe: "Empolgado e falastrão", gPe: "social"},
+  19: {ap: "Postura altiva", gAp: "postura", pe: "Sério e formal", gPe: "humor"},
+  20: {ap: "Magro", gAp: "peso", pe: "Inocente e otimista", gPe: "visao"},
+  21: {ap: "Alto", gAp: "altura", pe: "Teimoso", gPe: ""},
+  22: {ap: "Rosto quadrado e firme", gAp: "rosto", pe: "Desconfiado e pessimista", gPe: "visao"},
+  23: {ap: "Ombros largos", gAp: "", pe: "Brincalhão e informal", gPe: "humor"},
+  24: {ap: "Rosto redondo e simpático", gAp: "rosto", pe: "Tímido e modesto", gPe: "social"},
+  25: {ap: "Nariz pequeno", gAp: "nariz", pe: "Covarde", gPe: "coragem"},
+  26: {ap: "Usa piercings", gAp: "", pe: "Impulsivo, fala antes de pensar", gPe: "impulso"},
+  27: {ap: "Usa roupas formais", gAp: "roupa_tab", pe: "Grosseiro e vulgar", gPe: "educacao"},
+  28: {ap: "Cabelos compridos (até os ombros)", gAp: "cabelo_comp", pe: "Fala sem parar e com todo mundo", gPe: "social"},
+  29: {ap: "Tatuagens grandes à mostra", gAp: "tatuagem", pe: "Gosta de ficar sozinho", gPe: "social"},
+  30: {ap: "Barba ou maquiagem estilosa", gAp: "", pe: "Mandão e autoritário", gPe: ""},
+  31: {ap: "Extremamente alto", gAp: "altura", pe: "Chato e grudento", gPe: "social"},
+  32: {ap: "Corte de cabelo estiloso (moicano, undercut…)", gAp: "cabelo_comp", pe: "Cínico e insensível", gPe: "visao"},
+  33: {ap: "Usa roupas de marca", gAp: "roupa_tab", pe: "Orgulhoso de seu trabalho", gPe: ""},
+  34: {ap: "Cabelos muito compridos (até a cintura)", gAp: "cabelo_comp", pe: "Sempre tenta levar vantagem", gPe: "lei"},
+  35: {ap: "Tique nervoso no olho", gAp: "", pe: "Responsável e leva sua palavra muito a sério", gPe: "lei"},
+  36: {ap: "Calvo, careca ou cabelo raspado", gAp: "cabelo_comp", pe: "Preguiçoso e fica bocejando constantemente", gPe: "energia"},
+  37: {ap: "Olhos grandes e expressivos", gAp: "olhos", pe: "Espirra ou tosse com frequência", gPe: ""},
+  38: {ap: "Banguela", gAp: "", pe: "Gosta de cantarolar alegremente", gPe: "humor"},
+  39: {ap: "Olhos de cor rara (azul, verde, âmbar…)", gAp: "olhos_cor", pe: "Gosta de negociar favores", gPe: ""},
+  40: {ap: "Olhos de cores diferentes", gAp: "olhos_cor", pe: "Supersticioso, carrega amuletos de boa sorte", gPe: "crenca"}
+};
+
+var ROUPAS_PECA_SUPERIOR = [
+  "sobretudo escuro pesado com gola levantada",
+  "jaqueta jeans surrada com costuras reforçadas",
+  "camisa de flanela xadrez aberta sobre camiseta preta",
+  "moletom escuro largo com capuz e bolsos fundos",
+  "casaco de couro gasto nos punhos e cotovelos",
+  "camisa social com mangas dobradas até o cotovelo",
+  "suéter de tricô fechado em tom acinzentado",
+  "jaqueta corta-vento impermeável escura",
+  "colete utilitário cheio de pequenos bolsos sobre camisa simples",
+  "blazer escuro levemente amarrotado",
+  "cardigã antigo de lã com botões escuros",
+  "jaqueta militar verde-oliva desbotada"
+];
+
+var ROUPAS_CALCA_CALCADO = [
+  "calça cargo escura e coturnos pesados",
+  "jeans escuro e tênis gastos de caminhada",
+  "calça de sarja preta e botas de couro",
+  "calça de alfaiataria escura e sapatos sociais",
+  "calça jeans tradicional e botas de trabalho com solado grosso",
+  "calça escura confortável e sapatos discretos"
+];
+
+var ROUPAS_ACESSORIO_DETALHE = [
+  "carrega uma bolsa tiracolo de lona gastos nos cantos",
+  "usa um relógio de pulso metálico antigo e arranhado",
+  "leva um cachecol escuro enrolado no pescoço",
+  "usa luvas escuras sem dedos",
+  "tem um chaveiro pesado preso ao passador do cinto",
+  "carrega um bloco de anotações e caneta no bolso do peito",
+  "tem manchas recentes de sereno e poeira na barra da roupa",
+  "usa óculos de armação fina pendurados na gola",
+  "leva um crachá ou carteira de identificação no bolso",
+  "usa um anel prateado discreto no indicador"
+];
+
+var ATITUDES_NPC = [
+  {id: "Prestativo", label: "Prestativo (+5 em Persuasão contra ele)"},
+  {id: "Amistoso", label: "Amistoso (Disposto a ajudar / pequenos favores)"},
+  {id: "Indiferente", label: "Indiferente (Padrão: socialmente neutro)"},
+  {id: "Inamistoso", label: "Inamistoso (–5 em Persuasão contra ele)"},
+  {id: "Hostil", label: "Hostil (Falha automática em Persuasão; pode atacar/sabotar)"}
+];
+
+function dFace(f) { return Math.floor(Math.random() * f) + 1; }
+
+function rolarFaixaEtaria() {
+  var r = dFace(20);
+  var faixa = "", idade = 0;
+  if (r === 1) { faixa = "Criança"; idade = dFace(6) + 6; }
+  else if (r === 2) { faixa = "Adolescente"; idade = dFace(4) + 12; }
+  else if (r <= 5) { faixa = "Jovem"; idade = dFace(8) + 16; }
+  else if (r <= 15) { faixa = "Adulto"; idade = dFace(20) + 24; }
+  else if (r <= 18) { faixa = "Maduro"; idade = dFace(20) + 44; }
+  else { faixa = "Idoso"; idade = dFace(20) + 64; }
+  return {rolagem: r, faixa: faixa, idade: idade, texto: faixa + " (" + idade + " anos)"};
+}
+
+function sortearTabela62(qtd) {
+  var apLista = [], peLista = [];
+  var apGrupos = {}, peGrupos = {};
+  var apNums = {}, peNums = {};
+  var guard = 0;
+
+  while (apLista.length < qtd && guard < 100) {
+    guard++;
+    var rAp = dFace(20) + dFace(20);
+    var itemAp = TABELA_62[rAp];
+    if (apNums[rAp]) continue;
+    if (itemAp.gAp && apGrupos[itemAp.gAp]) continue;
+    // Evita cabelo comprido/colorido junto com careca
+    if (itemAp.gAp === "cabelo_cor" && apNums[36]) continue;
+    if (rAp === 36 && apGrupos["cabelo_cor"]) continue;
+    apNums[rAp] = true;
+    if (itemAp.gAp) apGrupos[itemAp.gAp] = true;
+    apLista.push(itemAp.ap + " [" + rAp + "]");
+  }
+
+  guard = 0;
+  while (peLista.length < qtd && guard < 100) {
+    guard++;
+    var rPe = dFace(20) + dFace(20);
+    var itemPe = TABELA_62[rPe];
+    if (peNums[rPe]) continue;
+    if (itemPe.gPe && peGrupos[itemPe.gPe]) continue;
+    peNums[rPe] = true;
+    if (itemPe.gPe) peGrupos[itemPe.gPe] = true;
+    peLista.push(itemPe.pe + " [" + rPe + "]");
+  }
+
+  return {aparencia: apLista.join("; "), personalidade: peLista.join("; ")};
+}
+
+function sortearRoupaCompleta() {
+  var sup = ROUPAS_PECA_SUPERIOR[Math.floor(Math.random() * ROUPAS_PECA_SUPERIOR.length)];
+  var inf = ROUPAS_CALCA_CALCADO[Math.floor(Math.random() * ROUPAS_CALCA_CALCADO.length)];
+  var det = ROUPAS_ACESSORIO_DETALHE[Math.floor(Math.random() * ROUPAS_ACESSORIO_DETALHE.length)];
+  return "Veste " + sup + ", " + inf + " e " + det + ".";
+}
+
+/* --- 6. BANCO COMPLETO DAS 36 CONDIÇÕES OFICIAIS --- */
+var CONDICOES_DB = [
+  {n:'Abalado', r:'–1d20 em testes (2x = Apavorado)', def:0, up:'Apavorado'},
+  {n:'Agarrado', r:'Desprevenido, Imóvel, –1d20 atq, só armas leves', def:-5},
+  {n:'Alquebrado', r:'Custo em PE de habilidades e rituais +1', def:0},
+  {n:'Apavorado', r:'–2d20 em perícias, deve fugir da fonte do medo', def:0},
+  {n:'Asfixiado', r:'Sem respirar; Fortitude após Vigor rodadas ou cai e perde 1d6 PV', def:0},
+  {n:'Atordoado', r:'Desprevenido e não pode fazer ações', def:-5},
+  {n:'Caído', r:'–2d20 atq C/C, desl. 1,5m, –5 Def C/C (+5 Def distância)', def:-5},
+  {n:'Cego', r:'Desprevenido, Lento, –2d20 For/Agi, alvos têm camuflagem total', def:-5},
+  {n:'Confuso', r:'Início do turno rola 1d6 (1: move, 2-3: nada, 4-5: ataca próximo, 6: passa)', def:0},
+  {n:'Debilitado', r:'–2d20 em Agi, For e Vig (2x = Inconsciente)', def:0, up:'Inconsciente'},
+  {n:'Desprevenido', r:'–5 na Defesa e –1d20 em Reflexos', def:-5},
+  {n:'Doente', r:'Sob efeito de uma doença específica', def:0},
+  {n:'Em Chamas', r:'Início do turno sofre 1d6 de fogo (Ação padrão apaga)', def:0},
+  {n:'Enjoado', r:'Só pode fazer ação padrão OU de movimento no turno', def:0},
+  {n:'Enlouquecendo', r:'0 SAN (Início de 3 turnos na cena = Insano)', def:0},
+  {n:'Enredado', r:'Lento, Vulnerável (–2 Def) e –1d20 em ataques', def:-2},
+  {n:'Envenenado', r:'Dano recorrente ou condição conforme o veneno', def:0},
+  {n:'Esmorecido', r:'–2d20 em testes de Intelecto e Presença', def:0},
+  {n:'Exausto', r:'Debilitado (–2d20 For/Agi/Vig), Lento e Vulnerável (2x = Inconsciente)', def:-2, up:'Inconsciente'},
+  {n:'Fascinado', r:'–2d20 em Percepção, só observa a fonte', def:0},
+  {n:'Fatigado', r:'Fraco (–1d20 For/Agi/Vig) e Vulnerável (2x = Exausto)', def:-2, up:'Exausto'},
+  {n:'Flanqueado', r:'Alvo cercado C/C (Concede vantagem / Ataque Furtivo)', def:0},
+  {n:'Fraco', r:'–1d20 em Agi, For e Vig (2x = Debilitado)', def:0, up:'Debilitado'},
+  {n:'Frustrado', r:'–1d20 em Int e Pre (2x = Esmorecido)', def:0, up:'Esmorecido'},
+  {n:'Imóvel', r:'Deslocamento reduzido a 0m', def:0},
+  {n:'Inconsciente', r:'Indefeso (–15 Def total, falha Ref), sem ações ou reações', def:-15},
+  {n:'Indefeso', r:'Desprevenido + –10 Def (–15 Def total), falha Ref, golpe de misericórdia', def:-15},
+  {n:'Lento', r:'Metade do deslocamento, não pode correr nem investir', def:0},
+  {n:'Ofuscado', r:'–1d20 em ataques e Percepção', def:0},
+  {n:'Paralisado', r:'Imóvel, Indefeso (–15 Def total) e só ações mentais', def:-15},
+  {n:'Pasmo', r:'Não pode realizar ações (apenas reações)', def:0},
+  {n:'Perturbado', r:'Menos da metade da SAN total', def:0},
+  {n:'Petrificado', r:'Inconsciente (–15 Def) e recebe RD 10', def:-15},
+  {n:'Sangrando', r:'Início do turno: Vigor DT 20 ou perde 1d6 PV', def:0},
+  {n:'Surdo', r:'Sem Percepção auditiva, –2d20 Iniciativa, condição ruim p/ rituais', def:0},
+  {n:'Surpreendido', r:'Desprevenido (–5 Def) e sem ações na 1ª rodada', def:-5},
+  {n:'Vulnerável', r:'–2 na Defesa', def:-2}
+];
+
+var campanhas = [];
+var camp = null;
+var logRolagens = [];
+var saveTimer = null;
+var scanlinesAtivo = false;
+var combatenteCondIdx = null;
+
+function $(id) { return document.getElementById(id); }
+function esc(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function num(v) { var n = parseFloat(v); return isNaN(n) ? 0 : n; }
+function toast(msg) {
+  var t = $('toast'); t.textContent = msg; t.style.display = 'block';
+  clearTimeout(toast._t); toast._t = setTimeout(function () { t.style.display = 'none'; }, 2400);
+}
+function cloneObj(o) { return JSON.parse(JSON.stringify(o)); }
+
+/* --- PERSISTÊNCIA --- */
+function carregar() {
+  try {
+    var s = localStorage.getItem(KEY);
+    if (s) { var p = JSON.parse(s); if (Array.isArray(p) && p.length) return p; }
+  } catch (e) {}
+  return [criarCampanhaDemo()];
+}
+
+function salvarAgora() {
+  clearTimeout(saveTimer);
+  try {
+    localStorage.setItem(KEY, JSON.stringify(campanhas));
+    var d = new Date();
+    var ind = $('save-ind');
+    if (ind) ind.textContent = 'Salvo ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+  } catch (e) {}
+}
+
+function agendarSalvar() {
+  var ind = $('save-ind');
+  if (ind) ind.textContent = 'Salvando...';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(salvarAgora, 300);
+}
+
+function criarCampanhaDemo() {
+  return normalizarCamp({
+    id: 'camp_' + Date.now(),
+    nome: 'Caso 01: Ecos na Neblina',
+    agentesEquipe: 'Arthur, Kaiser, Erin',
+    premissa: 'Desaparecimentos misteriosos próximos ao farol abandonado após relatos de cantorias noturnas.',
+    rodada: 1,
+    turnoIdx: 0,
+    combatentes: [
+      {nome: 'Arthur (Agente)', tipo: 'Agente', ini: 18, pv: 28, pvMax: 28, def: 17, conds: []},
+      {nome: 'Iniciado / Cultista', tipo: 'Ameaça', ini: 14, pv: 12, pvMax: 12, def: 15, conds: ['Desprevenido']}
+    ],
+    perseguicao: [
+      {nome: 'Arthur', papel: 'Presa', suc: 1, fal: 0}
+    ],
+    furtividade: [
+      {nome: 'Kaiser', vis: 1}
+    ],
+    ameacas: [cloneObj(CATALOGO_AMEACAS[12]), cloneObj(CATALOGO_AMEACAS[3])],
+    npcs: [
+      {
+        nome: 'Vicente Medeiros',
+        ocupacao: 'Fazendeiro Isolado (VD 20)',
+        faixaEtaria: 'Maduro (52 anos)',
+        atitude: 'Indiferente',
+        vd: 20, pv: 16, pvMax: 16, def: 16,
+        periciasTxt: 'Profissão 1d20+10, Percepção 2d20+5',
+        ataqueNome: 'Espingarda', ataqueTeste: '2d20+5', ataqueDano: '2d6+2',
+        notas: '• Aparência (Tab. 6.2): Olheiras profundas [9]; Cicatriz no rosto [14]; Postura encurvada [10].\n• Roupas: Veste sobretudo escuro pesado com gola levantada, calça cargo escura e coturnos pesados e tem manchas recentes de sereno e poeira na barra da roupa.\n• Personalidade (Tab. 6.2): Desconfiado e pessimista [22]; Observador e curioso [11]; Cuidadoso, pensa antes de falar [16].\n• Notas: Viu figuras encapuzadas na terça-feira.',
+        relacoes: [
+          {player: 'Arthur', pts: 2, obs: 'Confia no agente'},
+          {player: 'Kaiser', pts: 1, obs: 'Desconfiado'}
+        ]
+      }
+    ],
+    locais: [
+      {nome: 'Farol Velho', atmosfera: 'Neblina densa, cheiro de maresia e ferrugem', descricao: 'Símbolos ocultistas gravados atrás do gerador principal.'}
+    ],
+    cenas: [
+      {
+        nome: 'Cena 1: O Galpão do Porto',
+        urgenciaAtual: 4, urgenciaMax: 4,
+        pistas: [
+          {titulo: 'Diário Molhado', dt: 'Investigação DT 15', desc: 'Menciona o ritual às 03h00.', revelada: false},
+          {titulo: 'Rastro de Sangue', dt: 'Percepção DT 15', desc: 'Leva até o alçapão trancado.', revelada: true}
+        ]
+      }
+    ],
+    sessoes: [
+      {titulo: 'Sessão 01 - Chegada', notas: 'Os agentes conversaram com Vicente e descobriram o galpão.'}
+    ]
+  });
+}
+
+function normalizarCamp(c) {
+  if (!c.id) c.id = 'camp_' + Date.now() + '_' + Math.floor(Math.random() * 999);
+  c.nome = c.nome || 'Novo Caso Confidencial';
+  c.agentesEquipe = c.agentesEquipe || '';
+  c.premissa = c.premissa || '';
+  c.rodada = parseInt(c.rodada, 10) || 1;
+  c.turnoIdx = parseInt(c.turnoIdx, 10) || 0;
+  if (!Array.isArray(c.combatentes)) c.combatentes = [];
+  if (!Array.isArray(c.perseguicao)) c.perseguicao = [];
+  if (!Array.isArray(c.furtividade)) c.furtividade = [];
+  if (!Array.isArray(c.ameacas)) c.ameacas = [];
+  if (!Array.isArray(c.npcs)) c.npcs = [];
+  if (!Array.isArray(c.locais)) c.locais = [];
+  if (!Array.isArray(c.cenas)) c.cenas = [];
+  if (!Array.isArray(c.sessoes)) c.sessoes = [];
+  return c;
+}
+
+function popularCatalogosSelect() {
+  var h = '';
+  for (var i = 0; i < CATALOGO_AMEACAS.length; i++) {
+    var a = CATALOGO_AMEACAS[i];
+    h += '<option value="' + i + '">' + esc(a.nome) + ' (VD ' + a.vd + ' · PV ' + a.pv + ' · ' + a.ref + ')</option>';
+  }
+  if ($('sel-ameaca-catalogo')) $('sel-ameaca-catalogo').innerHTML = h;
+  if ($('sel-npc-arquetipo')) $('sel-npc-arquetipo').innerHTML = '<option value="aleatorio">&#127922; Qualquer Arquétipo (Sorteio Total)</option>' + h;
+}
+
+function renderListaCampanhas() {
+  var box = $('camp-list');
+  if (!campanhas.length) {
+    box.innerHTML = '<p class="hint" style="text-align:center; padding:20px;">Nenhuma campanha criada.</p>';
+    return;
+  }
+  var h = '';
+  for (var i = 0; i < campanhas.length; i++) {
+    var c = campanhas[i];
+    h += '<div class="agent">';
+    h += '<div><h3>' + esc(c.nome) + '</h3><p>Agentes: ' + esc(c.agentesEquipe || 'Não definidos') + ' · ' + c.npcs.length + ' NPCs · ' + c.cenas.length + ' Cenas</p></div>';
+    h += '<div class="btnrow" style="margin:0">';
+    h += '<button class="btn-p" type="button" data-act="abrirCamp" data-arg="' + esc(c.id) + '">Abrir Dossiê</button>';
+    h += '<button class="btn-s" type="button" data-act="excluirCamp" data-arg="' + esc(c.id) + '">Excluir</button>';
+    h += '</div></div>';
+  }
+  box.innerHTML = h;
+}
+
+function abrirCampanha(id) {
+  for (var i = 0; i < campanhas.length; i++) {
+    if (campanhas[i].id === id) camp = campanhas[i];
+  }
+  if (!camp) return;
+  $('view-list').className = 'view';
+  $('view-camp').className = 'view active';
+  popularCatalogosSelect();
+  renderTudoCampanha();
+  aba('combate');
+  window.scrollTo(0, 0);
+}
+
+function renderTudoCampanha() {
+  if (!camp) return;
+  $('camp-title').textContent = camp.nome;
+  $('c-nome').value = camp.nome;
+  $('c-agentes').value = camp.agentesEquipe;
+  $('c-premissa').value = camp.premissa;
+  renderCombate();
+  renderPerseguicao();
+  renderFurtividade();
+  renderAmeacas();
+  renderNpcs();
+  renderLocais();
+  renderCenas();
+  renderSessoes();
+}
+
+/* --- SISTEMA DE MÚLTIPLAS CONDIÇÕES E COMBATE --- */
+function infoCondicao(nome) {
+  for (var i = 0; i < CONDICOES_DB.length; i++) {
+    if (CONDICOES_DB[i].n === nome) return CONDICOES_DB[i];
+  }
+  return {n: nome, r: '', def: 0};
+}
+
+function garantirArrayConds(cb) {
+  if (!Array.isArray(cb.conds)) {
+    cb.conds = (cb.cond && cb.cond !== 'Normal') ? [cb.cond] : [];
+  }
+  return cb.conds;
+}
+
+function calcularPenalidadeDefConds(conds) {
+  var temIndefeso = false, temDesprev = false, temVuln = false, temCaido = false;
+  for (var i = 0; i < conds.length; i++) {
+    var c = conds[i];
+    if (c === 'Indefeso' || c === 'Inconsciente' || c === 'Paralisado' || c === 'Petrificado') temIndefeso = true;
+    if (c === 'Desprevenido' || c === 'Agarrado' || c === 'Atordoado' || c === 'Cego' || c === 'Surpreendido') temDesprev = true;
+    if (c === 'Vulnerável' || c === 'Enredado' || c === 'Fatigado' || c === 'Exausto') temVuln = true;
+    if (c === 'Caído') temCaido = true;
+  }
+  var pen = 0;
+  if (temIndefeso) pen -= 15;
+  else if (temDesprev) pen -= 5;
+  if (temVuln) pen -= 2;
+  if (temCaido) pen -= 5;
+  return pen;
+}
+
+function adicionarCondicaoAoCombatente(cb, novaCond) {
+  if (!novaCond) return;
+  var conds = garantirArrayConds(cb);
+  var info = infoCondicao(novaCond);
+
+  var idx = conds.indexOf(novaCond);
+  if (idx !== -1) {
+    if (info.up) {
+      conds.splice(idx, 1);
+      if (conds.indexOf(info.up) === -1) conds.push(info.up);
+      toast(novaCond + ' 2x evoluiu para ' + info.up.toUpperCase() + '!');
+    } else {
+      toast('O ser já está ' + novaCond);
+    }
+    return;
+  }
+  conds.push(novaCond);
+}
+
+function renderModalCondicoes() {
+  if (combatenteCondIdx === null || !camp.combatentes[combatenteCondIdx]) return;
+  var cb = camp.combatentes[combatenteCondIdx];
+  var conds = garantirArrayConds(cb);
+  $('cond-modal-title').textContent = 'Condições: ' + (cb.nome || 'Combatente');
+
+  var h = '';
+  for (var i = 0; i < CONDICOES_DB.length; i++) {
+    var c = CONDICOES_DB[i];
+    var ativo = conds.indexOf(c.n) !== -1;
+    h += '<div class="sub" style="margin-bottom:0; cursor:pointer; border-color:' + (ativo ? '#ef4444' : 'var(--border-app)') + '; background:' + (ativo ? 'rgba(153,27,27,0.28)' : 'var(--input)') + ';" data-act="toggleCondModal" data-cond="' + esc(c.n) + '">';
+    h += '<div style="display:flex; justify-content:space-between; align-items:center;">';
+    h += '<b style="color:' + (ativo ? '#fca5a5' : 'var(--accent-neon)') + ';">' + (ativo ? '&#10004; ' : '+ ') + esc(c.n) + '</b>';
+    if (c.def) h += '<span class="chip chip-red" style="margin:0;">' + c.def + ' Def</span>';
+    h += '</div>';
+    h += '<div style="font-size:0.75rem; color:var(--muted); margin-top:4px;">' + esc(c.r) + '</div>';
+    h += '</div>';
+  }
+  $('cond-modal-grid').innerHTML = h;
+}
+
+function renderCombate() {
+  var list = camp.combatentes;
+  if (camp.turnoIdx >= list.length) camp.turnoIdx = 0;
+  $('comb-rodada').textContent = camp.rodada;
+  $('comb-total').textContent = list.length;
+  $('comb-atual-nome').textContent = list.length ? (list[camp.turnoIdx].nome || 'Sem nome') : '-';
+
+  var h = '';
+  for (var i = 0; i < list.length; i++) {
+    var cb = list[i];
+    var conds = garantirArrayConds(cb);
+    var isTurno = (i === camp.turnoIdx);
+    var machucado = cb.pv > 0 && cb.pv <= Math.floor(cb.pvMax / 2);
+    var morrendo = cb.pv <= 0;
+    var penDef = calcularPenalidadeDefConds(conds);
+    var defEfetiva = num(cb.def) + penDef;
+
+    h += '<div class="sub' + (isTurno ? ' active-turn' : '') + '">';
+    h += '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap;">';
+    h += '<div>' + (isTurno ? '<span class="chip chip-blue">&#9654; TURNO ATUAL</span>' : '') + '<span class="chip ' + (cb.tipo === 'Ameaça' ? 'chip-red' : 'chip-ok') + '">' + esc(cb.tipo) + '</span>';
+    if (morrendo) h += '<span class="chip chip-red">0 PV / MORRENDO</span>';
+    else if (machucado) h += '<span class="chip chip-orange">MACHUCADO (&le;50%)</span>';
+    if (penDef < 0) h += '<span class="chip chip-red">DEF EFETIVA: ' + defEfetiva + ' (' + penDef + ')</span>';
+    h += '</div>';
+    h += '<button class="btn-s btn-sm" type="button" data-act="delCombatente" data-arg="' + i + '">Remover</button>';
+    h += '</div>';
+
+    h += '<div class="cols">';
+    h += '<div style="flex:2"><label>Nome</label><input type="text" value="' + esc(cb.nome) + '" data-cl="combatentes" data-i="' + i + '" data-k="nome"></div>';
+    h += '<div><label>Iniciativa</label><input type="number" value="' + num(cb.ini) + '" data-cl="combatentes" data-i="' + i + '" data-k="ini" data-num="1"></div>';
+    h += '<div><label>Defesa Base</label><input type="number" value="' + num(cb.def) + '" data-cl="combatentes" data-i="' + i + '" data-k="def" data-num="1"></div>';
+    h += '</div>';
+
+    h += '<div class="cols" style="align-items:flex-end;">';
+    h += '<div><label>PV Atual</label><input type="number" value="' + num(cb.pv) + '" data-cl="combatentes" data-i="' + i + '" data-k="pv" data-num="1"></div>';
+    h += '<div><label>PV Máx</label><input type="number" value="' + num(cb.pvMax) + '" data-cl="combatentes" data-i="' + i + '" data-k="pvMax" data-num="1"></div>';
+    h += '<div style="flex:2"><label>+ Adicionar Condição Rápida</label><select data-add-cond="' + i + '"><option value="">+ Escolher condição...</option>';
+    for (var c = 0; c < CONDICOES_DB.length; c++) {
+      var cObj = CONDICOES_DB[c];
+      h += '<option value="' + esc(cObj.n) + '">' + esc(cObj.n) + ' (' + esc(cObj.r) + ')</option>';
+    }
+    h += '</select></div>';
+    h += '</div>';
+
+    h += '<div style="margin:8px 0 4px 0; padding:6px 8px; background:var(--panel-app); border:1px dashed var(--border-app); border-radius:6px;">';
+    h += '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">';
+    h += '<small style="color:var(--muted); text-transform:uppercase;">Condições Ativas (' + conds.length + '):</small>';
+    h += '<button class="btn-s btn-sm" type="button" data-act="abrirCondModal" data-i="' + i + '" style="min-height:26px; padding:2px 8px; font-size:12px;">&#9776; Painel de Condições</button>';
+    h += '</div>';
+
+    if (!conds.length) {
+      h += '<span class="chip chip-ok" style="margin:0;">Nenhuma condição negativa</span>';
+    } else {
+      for (var k = 0; k < conds.length; k++) {
+        var cInfo = infoCondicao(conds[k]);
+        h += '<button type="button" class="chip chip-red" data-act="remCondComb" data-i="' + i + '" data-cond="' + esc(cInfo.n) + '" style="min-height:28px; cursor:pointer; text-align:left;" title="Toque para remover">';
+        h += '<b>' + esc(cInfo.n) + '</b>: ' + esc(cInfo.r) + ' &times;';
+        h += '</button>';
+      }
+    }
+    h += '</div>';
+
+    h += '<div class="btnrow" style="margin-top:6px; margin-bottom:0;">';
+    h += '<button class="btn-s btn-sm" type="button" data-act="pvComb" data-i="' + i + '" data-d="-10">-10 PV</button>';
+    h += '<button class="btn-s btn-sm" type="button" data-act="pvComb" data-i="' + i + '" data-d="-5">-5 PV</button>';
+    h += '<button class="btn-s btn-sm" type="button" data-act="pvComb" data-i="' + i + '" data-d="-1">-1 PV</button>';
+    h += '<button class="btn-p btn-sm" type="button" data-act="pvComb" data-i="' + i + '" data-d="1">+1 PV</button>';
+    h += '<button class="btn-p btn-sm" type="button" data-act="pvComb" data-i="' + i + '" data-d="5">+5 PV</button>';
+    h += '</div></div>';
+  }
+  $('combate-list').innerHTML = h || '<p class="hint">Nenhum participante em combate.</p>';
+}
+
+function renderPerseguicao() {
+  var list = camp.perseguicao, h = '';
+  for (var i = 0; i < list.length; i++) {
+    var p = list[i];
+    var statusChip = '';
+    if (p.suc >= 3) statusChip = '<span class="chip chip-ok">' + (p.papel === 'Caçador' ? 'ALCANÇOU!' : 'ESCAPOU!') + '</span>';
+    else if (p.fal >= 3) statusChip = '<span class="chip chip-red">' + (p.papel === 'Caçador' ? 'PERDEU A PRESA!' : 'CAPTURADO!') + '</span>';
+
+    h += '<div class="sub">';
+    h += '<div class="cols">';
+    h += '<div style="flex:2"><label>Nome</label><input type="text" value="' + esc(p.nome) + '" data-cl="perseguicao" data-i="' + i + '" data-k="nome"></div>';
+    h += '<div><label>Papel</label><select data-cl="perseguicao" data-i="' + i + '" data-k="papel"><option value="Presa"' + (p.papel === 'Presa' ? ' selected' : '') + '>Presa</option><option value="Caçador"' + (p.papel === 'Caçador' ? ' selected' : '') + '>Caçador</option></select></div>';
+    h += '</div>';
+    h += '<div style="margin:6px 0;">' + statusChip + '</div>';
+    h += '<div class="btnrow" style="align-items:center; margin-bottom:0;">';
+    h += '<span style="font-size:0.85rem; margin-right:8px;">Sucessos: <b style="color:#22c55e">' + p.suc + '/3</b></span>';
+    h += '<button class="btn-green btn-sm" type="button" data-act="modPerseg" data-i="' + i + '" data-k="suc" data-d="1">+1 Suc</button>';
+    h += '<button class="btn-s btn-sm" type="button" data-act="modPerseg" data-i="' + i + '" data-k="suc" data-d="-1">-1</button>';
+    h += '<span style="font-size:0.85rem; margin:0 8px;">Falhas: <b style="color:#ef4444">' + p.fal + '/3</b></span>';
+    h += '<button class="btn-red btn-sm" type="button" data-act="modPerseg" data-i="' + i + '" data-k="fal" data-d="1">+1 Fal</button>';
+    h += '<button class="btn-s btn-sm" type="button" data-act="modPerseg" data-i="' + i + '" data-k="fal" data-d="-1">-1</button>';
+    h += '<button class="btn-s btn-sm" type="button" data-act="delPerseg" data-i="' + i + '">X</button>';
+    h += '</div></div>';
+  }
+  $('perseg-list').innerHTML = h || '<p class="hint">Nenhum corredor na perseguição.</p>';
+}
+
+function renderFurtividade() {
+  var list = camp.furtividade, h = '';
+  for (var i = 0; i < list.length; i++) {
+    var f = list[i];
+    var descoberto = f.vis >= 3;
+    h += '<div class="sub">';
+    h += '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">';
+    h += '<input type="text" value="' + esc(f.nome) + '" data-cl="furtividade" data-i="' + i + '" data-k="nome" style="flex:1; margin-right:8px;" placeholder="Nome do Agente">';
+    h += (descoberto ? '<span class="chip chip-red">VISIBILIDADE ' + f.vis + ' (DESCOBERTO!)</span>' : '<span class="chip chip-blue">VISIBILIDADE ' + f.vis + '/3 (OCULTO)</span>');
+    h += '</div>';
+    h += '<div class="btnrow" style="margin-bottom:0;">';
+    h += '<button class="btn-green btn-sm" type="button" data-act="modFurtiv" data-i="' + i + '" data-d="-1">Esconder/Distrair (-1)</button>';
+    h += '<button class="btn-s btn-sm" type="button" data-act="modFurtiv" data-i="' + i + '" data-d="1">Falha Distrair (+1)</button>';
+    h += '<button class="btn-red btn-sm" type="button" data-act="modFurtiv" data-i="' + i + '" data-d="2">Ação Chamativa (+2)</button>';
+    h += '<button class="btn-s btn-sm" type="button" data-act="delFurtiv" data-i="' + i + '">X</button>';
+    h += '</div></div>';
+  }
+  $('furtiv-list').innerHTML = h || '<p class="hint">Nenhum personagem em cena de furtividade.</p>';
+}
+
+/* --- ABA 2: BESTIÁRIO & AMEAÇAS --- */
+function renderAmeacas() {
+  var list = camp.ameacas, h = '';
+  for (var i = 0; i < list.length; i++) {
+    var am = list[i];
+    h += '<div class="sub">';
+    h += '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">';
+    h += '<div><b style="font-size:1.05rem; color:var(--accent-bright)">' + esc(am.nome) + '</b> <span class="chip chip-red">VD ' + num(am.vd) + '</span></div>';
+    h += '<div class="btnrow" style="margin:0;">';
+    h += '<button class="btn-p btn-sm" type="button" data-act="enviarAmeacaCombate" data-i="' + i + '">&#9876; Enviar p/ Combate</button>';
+    h += '<button class="btn-s btn-sm" type="button" data-act="delAmeaca" data-i="' + i + '">Excluir</button>';
+    h += '</div></div>';
+
+    h += '<div class="cols">';
+    h += '<div style="flex:2"><label>Nome</label><input type="text" value="' + esc(am.nome) + '" data-cl="ameacas" data-i="' + i + '" data-k="nome"></div>';
+    h += '<div><label>VD</label><input type="number" value="' + num(am.vd) + '" data-cl="ameacas" data-i="' + i + '" data-k="vd" data-num="1"></div>';
+    h += '<div><label>PV Máx</label><input type="number" value="' + num(am.pv) + '" data-cl="ameacas" data-i="' + i + '" data-k="pv" data-num="1"></div>';
+    h += '<div><label>Defesa</label><input type="number" value="' + num(am.def) + '" data-cl="ameacas" data-i="' + i + '" data-k="def" data-num="1"></div>';
+    h += '</div>';
+
+    if (Array.isArray(am.pericias) && am.pericias.length) {
+      h += '<div style="margin:6px 0;"><small style="color:var(--muted); display:block; margin-bottom:4px;">ROLAR PERÍCIAS DA AMEAÇA:</small><div class="btnrow">';
+      for (var p = 0; p < am.pericias.length; p++) {
+        var per = am.pericias[p];
+        h += '<button class="btn-s btn-sm" type="button" data-act="rolarStringTeste" data-titulo="' + esc(am.nome + ' - ' + per.n) + '" data-formula="' + esc(per.r) + '">&#127922; ' + esc(per.n) + ' (' + esc(per.r) + ')</button>';
+      }
+      h += '</div></div>';
+    }
+
+    if (Array.isArray(am.ataques) && am.ataques.length) {
+      h += '<div style="margin:6px 0;"><small style="color:var(--muted); display:block; margin-bottom:4px;">ATAQUES E HABILIDADES (TOQUE PARA ROLAR):</small><div class="btnrow">';
+      for (var a = 0; a < am.ataques.length; a++) {
+        var atq = am.ataques[a];
+        h += '<button class="btn-p btn-sm" type="button" data-act="rolarAtaqueMonstro" data-nome="' + esc(am.nome + ': ' + atq.n) + '" data-teste="' + esc(atq.t) + '" data-dano="' + esc(atq.d) + '" data-obs="' + esc(atq.obs || '') + '">&#9876; ' + esc(atq.n) + ' (' + esc(atq.t) + ' | Dano ' + esc(atq.d) + ')</button>';
+      }
+      h += '</div></div>';
+    }
+
+    h += '<div><label style="font-size:0.75rem; color:var(--muted)">Habilidades / Resistências / Notas</label><input type="text" value="' + esc(am.notas || '') + '" data-cl="ameacas" data-i="' + i + '" data-k="notas" style="width:100%"></div>';
+    h += '</div>';
+  }
+  $('ameacas-list').innerHTML = h || '<p class="hint">Nenhuma ameaça adicionada ao caso ainda.</p>';
+}
+
+/* --- ABA 3: NPCS (TABELA 6.2 + ROUPAS + FAIXA ETÁRIA + ATITUDE + HOMEBREW) & LOCAIS --- */
+function chipAtitudeHtml(atitude) {
+  if (atitude === 'Prestativo') return '<span class="chip chip-ok">Prestativo (+5 Persuasão)</span>';
+  if (atitude === 'Amistoso') return '<span class="chip chip-blue">Amistoso (Ajuda/Favores)</span>';
+  if (atitude === 'Inamistoso') return '<span class="chip chip-orange">Inamistoso (–5 Persuasão)</span>';
+  if (atitude === 'Hostil') return '<span class="chip chip-red">Hostil (Falha / Ataca)</span>';
+  return '<span class="chip chip-blue">Indiferente (Neutro)</span>';
+}
+
+function renderNpcs() {
+  var list = camp.npcs, h = '';
+  for (var i = 0; i < list.length; i++) {
+    var npc = list[i];
+    if (!Array.isArray(npc.relacoes)) npc.relacoes = [];
+    var atit = npc.atitude || 'Indiferente';
+
+    h += '<div class="card" style="border-left: 4px solid var(--accent-bright);">';
+    h += '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap;">';
+    h += '<div><b style="font-size:1.1rem; color:var(--accent-neon)">' + esc(npc.nome || 'NPC Sem Nome') + '</b> ';
+    h += '<span class="chip chip-blue">' + esc(npc.ocupacao || 'Civil') + '</span>';
+    if (npc.faixaEtaria) h += '<span class="chip chip-ok">' + esc(npc.faixaEtaria) + '</span>';
+    h += chipAtitudeHtml(atit);
+    h += '</div>';
+    h += '<div class="btnrow" style="margin:0;">';
+    h += '<button class="btn-s btn-sm" type="button" data-act="rerrolarDescricaoNpc" data-i="' + i + '" title="Sortear nova Aparência, Roupa, Personalidade e Idade">&#127922; Rerrolar Tab. 6.2</button>';
+    h += '<button class="btn-s btn-sm" type="button" data-act="enviarNpcCombate" data-i="' + i + '">&#9876; Combate</button>';
+    h += '<button class="btn-s btn-sm" type="button" data-act="delNpc" data-i="' + i + '">Excluir</button>';
+    h += '</div></div>';
+
+    h += '<div class="cols">';
+    h += '<div style="flex:2"><label>Nome do NPC</label><input type="text" value="' + esc(npc.nome) + '" data-cl="npcs" data-i="' + i + '" data-k="nome"></div>';
+    h += '<div style="flex:2"><label>Ocupação / Arquétipo</label><input type="text" value="' + esc(npc.ocupacao) + '" data-cl="npcs" data-i="' + i + '" data-k="ocupacao"></div>';
+    h += '<div><label>PV</label><input type="number" value="' + num(npc.pv) + '" data-cl="npcs" data-i="' + i + '" data-k="pv" data-num="1"></div>';
+    h += '<div><label>Defesa</label><input type="number" value="' + num(npc.def) + '" data-cl="npcs" data-i="' + i + '" data-k="def" data-num="1"></div>';
+    h += '</div>';
+
+    h += '<div class="cols">';
+    h += '<div><label>Faixa Etária (p. 164)</label><input type="text" value="' + esc(npc.faixaEtaria || 'Adulto') + '" data-cl="npcs" data-i="' + i + '" data-k="faixaEtaria"></div>';
+    h += '<div style="flex:2"><label>Categoria de Atitude (p. 77)</label><select data-cl="npcs" data-i="' + i + '" data-k="atitude">';
+    for (var a = 0; a < ATITUDES_NPC.length; a++) {
+      var atObj = ATITUDES_NPC[a];
+      h += '<option value="' + esc(atObj.id) + '"' + (atit === atObj.id ? ' selected' : '') + '>' + esc(atObj.label) + '</option>';
+    }
+    h += '</select></div>';
+    h += '</div>';
+
+    h += '<div class="cols">';
+    h += '<div style="flex:2"><label>Perícias Principais</label><input type="text" value="' + esc(npc.periciasTxt || '') + '" data-cl="npcs" data-i="' + i + '" data-k="periciasTxt"></div>';
+    h += '<div><label>Arma/Ataque</label><input type="text" value="' + esc(npc.ataqueNome || 'Desarmado') + '" data-cl="npcs" data-i="' + i + '" data-k="ataqueNome"></div>';
+    h += '<div><label>Teste</label><input type="text" value="' + esc(npc.ataqueTeste || '1d20+0') + '" data-cl="npcs" data-i="' + i + '" data-k="ataqueTeste"></div>';
+    h += '<div><label>Dano</label><input type="text" value="' + esc(npc.ataqueDano || '1d3+1') + '" data-cl="npcs" data-i="' + i + '" data-k="ataqueDano"></div>';
+    h += '</div>';
+
+    h += '<div class="btnrow" style="margin-top:4px;">';
+    h += '<button class="btn-p btn-sm" type="button" data-act="rolarAtaqueMonstro" data-nome="' + esc(npc.nome + ' (' + (npc.ataqueNome || 'Ataque') + ')') + '" data-teste="' + esc(npc.ataqueTeste || '1d20') + '" data-dano="' + esc(npc.ataqueDano || '1d3') + '" data-obs="">&#127922; Rolar Ataque do NPC</button>';
+    h += '</div>';
+
+    h += '<div style="margin-bottom:10px;"><label style="font-size:0.75rem; color:var(--muted)">Aparência (Tab. 6.2) / Roupas / Personalidade (Tab. 6.2) / Notas</label><textarea data-cl="npcs" data-i="' + i + '" data-k="notas" style="height:92px; width:100%">' + esc(npc.notas || '') + '</textarea></div>';
+
+    h += '<div class="sub" style="margin-bottom:0;">';
+    h += '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">';
+    h += '<b style="font-size:0.82rem; color:var(--accent-bright); text-transform:uppercase;">&#9733; Relacionamento com os Players (1 a 3 Pontos)</b>';
+    h += '<button class="btn-s btn-sm" type="button" data-act="addRelacaoNpc" data-i="' + i + '">+ Adicionar Player</button>';
+    h += '</div>';
+
+    for (var r = 0; r < npc.relacoes.length; r++) {
+      var rel = npc.relacoes[r];
+      var pts = parseInt(rel.pts, 10) || 0;
+      h += '<div class="rel-row">';
+      h += '<input type="text" value="' + esc(rel.player) + '" placeholder="Nome do Player/Agente" data-rel-npc="' + i + '" data-rel-idx="' + r + '" data-rel-k="player" style="flex:1; min-width:90px;">';
+      h += '<div class="rel-dots">';
+      for (var d = 1; d <= 3; d++) {
+        var filled = pts >= d;
+        h += '<button type="button" class="rel-dot' + (filled ? ' filled' : '') + '" data-act="setRelPts" data-npc="' + i + '" data-rel="' + r + '" data-pts="' + d + '">' + d + '</button>';
+      }
+      h += '</div>';
+      h += '<input type="text" value="' + esc(rel.obs || '') + '" placeholder="Afinidade / Nota..." data-rel-npc="' + i + '" data-rel-idx="' + r + '" data-rel-k="obs" style="flex:1; min-width:80px; margin-right:6px;">';
+      h += '<button class="btn-s btn-sm" type="button" data-act="delRelacaoNpc" data-npc="' + i + '" data-rel="' + r + '">X</button>';
+      h += '</div>';
+    }
+    if (!npc.relacoes.length) h += '<p class="hint" style="margin:0;">Toque em "+ Adicionar Player" para rastrear os 3 pontos de afinidade.</p>';
+    h += '</div></div>';
+  }
+  $('npcs-list').innerHTML = h || '<p class="hint">Nenhum NPC cadastrado.</p>';
+}
+
+function renderLocais() {
+  var list = camp.locais, h = '';
+  for (var i = 0; i < list.length; i++) {
+    var lc = list[i];
+    h += '<div class="sub">';
+    h += '<div class="cols">';
+    h += '<div><label>Nome do Local</label><input type="text" value="' + esc(lc.nome) + '" data-cl="locais" data-i="' + i + '" data-k="nome"></div>';
+    h += '<div><label>Atmosfera / Clima</label><input type="text" value="' + esc(lc.atmosfera) + '" data-cl="locais" data-i="' + i + '" data-k="atmosfera"></div>';
+    h += '</div>';
+    h += '<div><label style="font-size:0.75rem; color:var(--muted)">Descrição, Pistas e Segredos do Local</label><textarea data-cl="locais" data-i="' + i + '" data-k="descricao" style="height:65px">' + esc(lc.descricao) + '</textarea></div>';
+    h += '<button class="btn-s btn-sm" type="button" data-act="delLocal" data-i="' + i + '" style="margin-top:6px">Remover Local</button>';
+    h += '</div>';
+  }
+  $('locais-list').innerHTML = h || '<p class="hint">Nenhum local registrado.</p>';
+}
+
+/* --- ABA 4: INVESTIGAÇÃO (CENAS & PISTAS) --- */
+function renderCenas() {
+  var list = camp.cenas, h = '';
+  for (var i = 0; i < list.length; i++) {
+    var cn = list[i];
+    if (!Array.isArray(cn.pistas)) cn.pistas = [];
+
+    h += '<div class="card">';
+    h += '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">';
+    h += '<input type="text" value="' + esc(cn.nome) + '" data-cl="cenas" data-i="' + i + '" data-k="nome" style="font-weight:bold; font-size:1rem; color:var(--accent-bright); flex:1; margin-right:8px;">';
+    h += '<button class="btn-s btn-sm" type="button" data-act="delCena" data-i="' + i + '">Excluir Cena</button>';
+    h += '</div>';
+
+    h += '<div class="btnrow" style="align-items:center;">';
+    h += '<span style="font-size:0.85rem; margin-right:8px;">Rodadas de Urgência: <b style="color:var(--accent-bright)">' + num(cn.urgenciaAtual) + ' / ' + num(cn.urgenciaMax) + '</b></span>';
+    h += '<button class="btn-s btn-sm" type="button" data-act="modUrgencia" data-i="' + i + '" data-d="-1">-1 Rodada</button>';
+    h += '<button class="btn-s btn-sm" type="button" data-act="modUrgencia" data-i="' + i + '" data-d="1">+1 Rodada</button>';
+    h += '<button class="btn-p btn-sm" type="button" data-act="addPistaCena" data-i="' + i + '">+ Adicionar Pista</button>';
+    h += '</div>';
+
+    for (var p = 0; p < cn.pistas.length; p++) {
+      var pt = cn.pistas[p];
+      h += '<div class="sub" style="border-left: 3px solid ' + (pt.revelada ? '#22c55e' : '#f97316') + ';">';
+      h += '<div class="cols">';
+      h += '<div style="flex:2"><label>Pista / Evidência</label><input type="text" value="' + esc(pt.titulo) + '" data-pista-c="' + i + '" data-pista-p="' + p + '" data-pista-k="titulo"></div>';
+      h += '<div><label>Perícia &amp; DT</label><input type="text" value="' + esc(pt.dt) + '" data-pista-c="' + i + '" data-pista-p="' + p + '" data-pista-k="dt" placeholder="Ex: Investigação DT 15"></div>';
+      h += '</div>';
+      h += '<div style="margin:6px 0;"><input type="text" value="' + esc(pt.desc) + '" data-pista-c="' + i + '" data-pista-p="' + p + '" data-pista-k="desc" placeholder="O que o jogador descobre..." style="width:100%"></div>';
+      h += '<div class="btnrow" style="margin-bottom:0;">';
+      h += '<button class="' + (pt.revelada ? 'btn-green' : 'btn-s') + ' btn-sm" type="button" data-act="togglePistaRev" data-c="' + i + '" data-p="' + p + '">' + (pt.revelada ? '&#10004; REVELADA AOS PLAYERS' : '&#128274; OCULTA (Toque p/ Revelar)') + '</button>';
+      h += '<button class="btn-s btn-sm" type="button" data-act="delPistaCena" data-c="' + i + '" data-p="' + p + '">Remover</button>';
+      h += '</div></div>';
+    }
+    if (!cn.pistas.length) h += '<p class="hint">Nenhuma pista cadastrada nesta cena.</p>';
+    h += '</div>';
+  }
+  $('cenas-list').innerHTML = h || '<p class="hint">Nenhuma cena de investigação criada.</p>';
+}
+
+/* --- ABA 5: DIÁRIO DE SESSÕES --- */
+function renderSessoes() {
+  var list = camp.sessoes, h = '';
+  for (var i = 0; i < list.length; i++) {
+    var s = list[i];
+    h += '<div class="sub">';
+    h += '<div style="display:flex; justify-content:space-between; margin-bottom:6px;">';
+    h += '<input type="text" value="' + esc(s.titulo) + '" data-cl="sessoes" data-i="' + i + '" data-k="titulo" placeholder="Sessão 01 - Data" style="flex:1; margin-right:8px; font-weight:bold;">';
+    h += '<button class="btn-s btn-sm" type="button" data-act="delSessaoLog" data-i="' + i + '">X</button>';
+    h += '</div>';
+    h += '<textarea data-cl="sessoes" data-i="' + i + '" data-k="notas" style="height:80px" placeholder="Resumo dos acontecimentos...">' + esc(s.notas) + '</textarea>';
+    h += '</div>';
+  }
+  $('sessoes-list').innerHTML = h || '<p class="hint">Nenhum relatório de sessão salvo.</p>';
+}
+
+/* --- MOTOR DE DADOS --- */
+function rolarTestePool(formula, titulo) {
+  var str = String(formula || '1d20').replace(/\s+/g, '').toLowerCase();
+  var m = str.match(/^([+-]?\d*)d20([+-]\d+)?$/);
+  if (!m) return rolarSomaLivre(formula, titulo);
+
+  var nDados = m[1] === '' || m[1] === '+' ? 1 : (m[1] === '-' ? -1 : parseInt(m[1], 10));
+  var bonus = m[2] ? parseInt(m[2], 10) : 0;
+
+  var qtdRolar = nDados > 0 ? nDados : (2 + Math.abs(nDados));
+  var modo = nDados > 0 ? 'maior' : 'pior';
+  var rolls = [];
+  for (var i = 0; i < qtdRolar; i++) rolls.push(dFace(20));
+
+  var escolhido = nDados > 0 ? Math.max.apply(null, rolls) : Math.min.apply(null, rolls);
+  var total = escolhido + bonus;
+  var det = qtdRolar + 'd20 (' + modo + ') [' + rolls.join(', ') + '] &rarr; <b>' + escolhido + '</b>' + (bonus ? (bonus > 0 ? ' +' : ' ') + bonus : '');
+  mostrarDado(titulo || ('Teste ' + formula), String(total), det, '');
+}
+
+function rolarSomaLivre(expr, titulo) {
+  expr = String(expr || '1d6').replace(/\s+/g, '').toLowerCase();
+  var re = /([+-]?)(\d*)d(\d+)|([+-]?)(\d+)/g, m, consumido = 0, total = 0, partes = [];
+  while ((m = re.exec(expr)) !== null) {
+    if (m.index !== consumido) break;
+    consumido += m[0].length;
+    if (m[3]) {
+      var sinal = m[1] === '-' ? -1 : 1;
+      var q = m[2] === '' ? 1 : parseInt(m[2], 10);
+      var f = parseInt(m[3], 10);
+      if (q < 1 || q > 100) return;
+      var rolls = [], soma = 0;
+      for (var i = 0; i < q; i++) { var r = dFace(f); rolls.push(r); soma += r; }
+      total += sinal * soma;
+      partes.push((sinal < 0 ? '-' : '') + q + 'd' + f + ' [' + rolls.join(', ') + ']');
+    } else {
+      var v = parseInt(m[5], 10) * (m[4] === '-' ? -1 : 1);
+      total += v;
+      partes.push((v >= 0 ? '+' : '') + v);
+    }
+  }
+  mostrarDado(titulo || ('Rolagem ' + expr), String(total), partes.join(' '), '');
+}
+
+function mostrarDado(titulo, principal, detalhe, extraHtml) {
+  $('dice-title').textContent = titulo;
+  $('dice-main').textContent = principal;
+  $('dice-detail').innerHTML = detalhe;
+  $('dice-extra').innerHTML = extraHtml || '';
+  logRolagens.unshift(titulo + ' = ' + principal);
+  if (logRolagens.length > 12) logRolagens.pop();
+  var l = '';
+  for (var i = 0; i < logRolagens.length; i++) l += '<div>' + esc(logRolagens[i]) + '</div>';
+  $('dice-log').innerHTML = l;
+  $('dice-sheet').style.display = 'block';
+}
+
+function mostrarModalInfo(titulo, htmlCorpo) {
+  $('info-modal-title').textContent = titulo;
+  $('info-modal-body').innerHTML = htmlCorpo;
+  $('info-modal').style.display = 'block';
+}
+
+function aba(nome) {
+  var tabs = document.querySelectorAll('.sheet-tab'), i;
+  for (i = 0; i < tabs.length; i++) tabs[i].className = 'sheet-tab' + (tabs[i].id === 'tab-' + nome ? ' active' : '');
+  var bt = document.querySelectorAll('.tab');
+  for (i = 0; i < bt.length; i++) bt[i].className = 'tab' + (bt[i].getAttribute('data-arg') === nome ? ' active' : '');
+  window.scrollTo(0, 0);
+}
+
+/* --- AÇÕES CENTRALIZADAS --- */
+var ACOES = {
+  novaCampanha: function () {
+    var nova = normalizarCamp({nome: 'Novo Caso #' + (campanhas.length + 1), agentesEquipe: 'Agente 1, Agente 2'});
+    campanhas.push(nova);
+    salvarAgora();
+    abrirCampanha(nova.id);
+  },
+  abrirCamp: function (el) { abrirCampanha(el.getAttribute('data-arg')); },
+  excluirCamp: function (el) {
+    var id = el.getAttribute('data-arg');
+    if (!confirm('Apagar esta campanha permanentemente?')) return;
+    campanhas = campanhas.filter(function (c) { return c.id !== id; });
+    salvarAgora();
+    renderListaCampanhas();
+  },
+  voltar: function () {
+    salvarAgora();
+    $('view-camp').className = 'view';
+    $('view-list').className = 'view active';
+    $('dice-sheet').style.display = 'none';
+    renderListaCampanhas();
+  },
+  salvar: function () { salvarAgora(); toast('Dossiê salvo!'); },
+  aba: function (el) { aba(el.getAttribute('data-arg')); },
+
+  themeToggle: function () {
+    var m = $('theme-menu');
+    m.style.display = m.style.display === 'block' ? 'none' : 'block';
+  },
+  mudarTema: function (el) {
+    var tema = el.getAttribute('data-arg') || 'medo';
+    document.documentElement.setAttribute('data-theme', tema);
+    localStorage.setItem('dossie_op_theme', tema);
+    $('theme-menu').style.display = 'none';
+    toast('Elemento sintonizado: ' + tema.toUpperCase());
+  },
+  toggleScanlines: function () {
+    scanlinesAtivo = !scanlinesAtivo;
+    $('scanline-overlay').style.display = scanlinesAtivo ? 'block' : 'none';
+    $('theme-menu').style.display = 'none';
+    toast(scanlinesAtivo ? 'Filtro CRT Ativado' : 'Filtro CRT Desativado');
+  },
+
+  addCombatente: function (el) {
+    var tipo = el.getAttribute('data-arg') || 'Agente';
+    camp.combatentes.push({nome: 'Novo ' + tipo, tipo: tipo, ini: 10, pv: 20, pvMax: 20, def: 15, conds: []});
+    renderCombate(); agendarSalvar();
+  },
+  delCombatente: function (el) {
+    camp.combatentes.splice(parseInt(el.getAttribute('data-arg'), 10), 1);
+    renderCombate(); agendarSalvar();
+  },
+  ordenarIni: function () {
+    camp.combatentes.sort(function (a, b) { return num(b.ini) - num(a.ini); });
+    camp.turnoIdx = 0;
+    renderCombate(); agendarSalvar();
+    toast('Iniciativa ordenada!');
+  },
+  proxTurno: function () {
+    if (!camp.combatentes.length) return;
+    camp.turnoIdx++;
+    if (camp.turnoIdx >= camp.combatentes.length) {
+      camp.turnoIdx = 0;
+      camp.rodada++;
+    }
+    renderCombate(); agendarSalvar();
+  },
+  resetCombate: function () {
+    if (!confirm('Zerar a rodada e limpar a lista de combate?')) return;
+    camp.combatentes = [];
+    camp.rodada = 1;
+    camp.turnoIdx = 0;
+    renderCombate(); agendarSalvar();
+  },
+  pvComb: function (el) {
+    var i = parseInt(el.getAttribute('data-i'), 10);
+    var d = parseInt(el.getAttribute('data-d'), 10);
+    var cb = camp.combatentes[i];
+    if (!cb) return;
+    cb.pv = Math.max(0, Math.min(num(cb.pvMax), num(cb.pv) + d));
+    renderCombate(); agendarSalvar();
+  },
+  remCondComb: function (el) {
+    var i = parseInt(el.getAttribute('data-i'), 10);
+    var cName = el.getAttribute('data-cond');
+    var cb = camp.combatentes[i];
+    if (!cb) return;
+    var conds = garantirArrayConds(cb);
+    var idx = conds.indexOf(cName);
+    if (idx !== -1) conds.splice(idx, 1);
+    renderCombate(); agendarSalvar();
+  },
+  abrirCondModal: function (el) {
+    combatenteCondIdx = parseInt(el.getAttribute('data-i'), 10);
+    renderModalCondicoes();
+    $('cond-modal').style.display = 'block';
+  },
+  toggleCondModal: function (el) {
+    if (combatenteCondIdx === null) return;
+    var cb = camp.combatentes[combatenteCondIdx];
+    var cName = el.getAttribute('data-cond');
+    var conds = garantirArrayConds(cb);
+    var idx = conds.indexOf(cName);
+    if (idx === -1) conds.push(cName);
+    else conds.splice(idx, 1);
+    renderModalCondicoes();
+    renderCombate(); agendarSalvar();
+  },
+  limparCondsModal: function () {
+    if (combatenteCondIdx === null) return;
+    camp.combatentes[combatenteCondIdx].conds = [];
+    renderModalCondicoes();
+    renderCombate(); agendarSalvar();
+  },
+  fecharCondModal: function () {
+    $('cond-modal').style.display = 'none';
+    combatenteCondIdx = null;
+  },
+
+  addPerseg: function () {
+    camp.perseguicao.push({nome: 'Corredor', papel: 'Presa', suc: 0, fal: 0});
+    renderPerseguicao(); agendarSalvar();
+  },
+  modPerseg: function (el) {
+    var i = parseInt(el.getAttribute('data-i'), 10);
+    var k = el.getAttribute('data-k');
+    var d = parseInt(el.getAttribute('data-d'), 10);
+    var item = camp.perseguicao[i];
+    if (!item) return;
+    item[k] = Math.max(0, Math.min(3, (item[k] || 0) + d));
+    renderPerseguicao(); agendarSalvar();
+  },
+  delPerseg: function (el) {
+    camp.perseguicao.splice(parseInt(el.getAttribute('data-i'), 10), 1);
+    renderPerseguicao(); agendarSalvar();
+  },
+  rolarEventoPerseg: function () {
+    var r = dFace(20);
+    var txt = '';
+    if (r <= 8) txt = '<b>1–8: Caminho Livre</b> — Sem evento adicional nesta rodada.';
+    else if (r <= 10) txt = '<b>9–10: Entulhos bloqueiam o caminho</b> — Exige <b>Força DT 15</b>.';
+    else if (r <= 12) txt = '<b>11–12: Piso escorregadio</b> — Exige <b>Acrobacia DT 20</b>.';
+    else if (r <= 14) txt = '<b>13–14: Um entulho rola pelo caminho</b> — Exige <b>Reflexos DT 20</b>.';
+    else if (r === 15) txt = '<b>15: Multidão impedindo a passagem</b> — Exige <b>Intimidação DT 20</b>.';
+    else if (r <= 17) txt = '<b>16–17: Caminho mais curto bloqueado por peso</b> — Exige <b>Força DT 15</b>.';
+    else if (r === 18) txt = '<b>18: Vias labirínticas para atalho</b> — Exige <b>Percepção DT 20</b>.';
+    else if (r === 19) txt = '<b>19: Porta trancada no atalho</b> — Exige <b>Crime DT 25</b>.';
+    else txt = '<b>20: Caminho oculto por vegetação/escombros</b> — Exige <b>Sobrevivência DT 20</b>.';
+    mostrarModalInfo('Evento de Perseguição (1d20 = ' + r + ')', txt);
+  },
+  addFurtiv: function () {
+    camp.furtividade.push({nome: 'Agente', vis: 0});
+    renderFurtividade(); agendarSalvar();
+  },
+  modFurtiv: function (el) {
+    var i = parseInt(el.getAttribute('data-i'), 10);
+    var d = parseInt(el.getAttribute('data-d'), 10);
+    var f = camp.furtividade[i];
+    if (!f) return;
+    f.vis = Math.max(0, (f.vis || 0) + d);
+    renderFurtividade(); agendarSalvar();
+  },
+  delFurtiv: function (el) {
+    camp.furtividade.splice(parseInt(el.getAttribute('data-i'), 10), 1);
+    renderFurtividade(); agendarSalvar();
+  },
+  resetFurtiv: function () {
+    for (var i = 0; i < camp.furtividade.length; i++) camp.furtividade[i].vis = 0;
+    renderFurtividade(); agendarSalvar();
+    toast('Visibilidade zerada!');
+  },
+
+  addAmeacaCatalogo: function () {
+    var idx = parseInt($('sel-ameaca-catalogo').value, 10) || 0;
+    var modelo = cloneObj(CATALOGO_AMEACAS[idx]);
+    camp.ameacas.unshift(modelo);
+    renderAmeacas(); agendarSalvar();
+    toast(modelo.nome + ' adicionado!');
+  },
+  sortearAmeacaCatalogo: function () {
+    var idx = Math.floor(Math.random() * CATALOGO_AMEACAS.length);
+    var modelo = cloneObj(CATALOGO_AMEACAS[idx]);
+    camp.ameacas.unshift(modelo);
+    renderAmeacas(); agendarSalvar();
+    toast('Sorteado: ' + modelo.nome);
+  },
+  addAmeacaCustom: function () {
+    camp.ameacas.unshift({
+      nome: "Nova Criatura / Ameaça", vd: 60, pv: 90, def: 22,
+      pericias: [{n:"Percepção", r:"3d20+10"}, {n:"Iniciativa", r:"3d20+10"}],
+      ataques: [{n:"Golpe Brutal", t:"3d20+15", d:"2d10+10", obs:"Sangue/Impacto"}],
+      notas: "Presença Perturbadora DT 20 (3d6 mental)."
+    });
+    renderAmeacas(); agendarSalvar();
+  },
+  delAmeaca: function (el) {
+    camp.ameacas.splice(parseInt(el.getAttribute('data-i'), 10), 1);
+    renderAmeacas(); agendarSalvar();
+  },
+  enviarAmeacaCombate: function (el) {
+    var am = camp.ameacas[parseInt(el.getAttribute('data-i'), 10)];
+    if (!am) return;
+    camp.combatentes.push({
+      nome: am.nome, tipo: 'Ameaça', ini: dFace(20) + 5, pv: num(am.pv), pvMax: num(am.pv), def: num(am.def), conds: []
+    });
+    renderCombate(); agendarSalvar();
+    toast(am.nome + ' enviado para o Combate!');
+  },
+  rolarStringTeste: function (el) {
+    rolarTestePool(el.getAttribute('data-formula'), el.getAttribute('data-titulo'));
+  },
+  rolarAtaqueMonstro: function (el) {
+    var nome = el.getAttribute('data-nome');
+    var teste = el.getAttribute('data-teste');
+    var dano = el.getAttribute('data-dano');
+    var obs = el.getAttribute('data-obs');
+    rolarTestePool(teste, nome);
+    var btnExtra = '<button class="btn-p btn-sm" type="button" data-act="rapidoDano" data-arg="' + esc(dano) + '">&#128165; Rolar Dano (' + esc(dano) + ')</button>';
+    if (obs) btnExtra += '<div style="width:100%; text-align:center; font-size:0.78rem; color:var(--muted); margin-top:4px;">' + esc(obs) + '</div>';
+    $('dice-extra').innerHTML = btnExtra;
+  },
+
+  // GERADOR COMPLETO DE NPC COM TABELA 6.2 (2d20 x3), ROUPAS, FAIXA ETÁRIA (1d20) E ATITUDE
+  gerarNpcAleatorio: function () {
+    var selVal = $('sel-npc-arquetipo').value;
+    var idx = selVal === 'aleatorio' ? Math.floor(Math.random() * CATALOGO_AMEACAS.length) : parseInt(selVal, 10);
+    if (isNaN(idx)) idx = 0;
+    var arq = CATALOGO_AMEACAS[idx];
+
+    var nomeSort = NOMES_NPC[Math.floor(Math.random() * NOMES_NPC.length)] + ' ' + SOBRENOMES_NPC[Math.floor(Math.random() * SOBRENOMES_NPC.length)];
+    var idadeInfo = rolarFaixaEtaria();
+    var tab62 = sortearTabela62(3);
+    var roupaSort = sortearRoupaCompleta();
+    var atitudesPadrao = ['Prestativo', 'Amistoso', 'Indiferente', 'Indiferente', 'Inamistoso'];
+    var atitSort = atitudesPadrao[Math.floor(Math.random() * atitudesPadrao.length)];
+
+    var perTxt = [];
+    for (var p = 0; p < arq.pericias.length; p++) perTxt.push(arq.pericias[p].n + ' ' + arq.pericias[p].r);
+    var atq = arq.ataques[0] || {n:'Desarmado', t:'1d20', d:'1d3'};
+
+    var rels = [];
+    var nomesPlayers = String(camp.agentesEquipe || '').split(',');
+    for (var j = 0; j < nomesPlayers.length; j++) {
+      var np = nomesPlayers[j].replace(/^\s+|\s+$/g, '');
+      if (np) rels.push({player: np, pts: 1, obs: ''});
+    }
+
+    var notasCompletas = '• Aparência (Tab. 6.2): ' + tab62.aparencia + '.\n' +
+      '• Roupas: ' + roupaSort + '\n' +
+      '• Personalidade (Tab. 6.2): ' + tab62.personalidade + '.' +
+      (arq.notas ? '\n• Regras: ' + arq.notas : '');
+
+    camp.npcs.unshift({
+      nome: nomeSort,
+      ocupacao: arq.nome + ' (VD ' + arq.vd + ')',
+      faixaEtaria: idadeInfo.texto,
+      atitude: atitSort,
+      vd: arq.vd, pv: arq.pv, pvMax: arq.pv, def: arq.def,
+      periciasTxt: perTxt.join(', '),
+      ataqueNome: atq.n, ataqueTeste: atq.t, ataqueDano: atq.d,
+      notas: notasCompletas,
+      relacoes: rels
+    });
+    renderNpcs(); agendarSalvar();
+    toast('NPC Gerado: ' + nomeSort + ' (' + idadeInfo.texto + ')');
+  },
+  rerrolarDescricaoNpc: function (el) {
+    var i = parseInt(el.getAttribute('data-i'), 10);
+    var npc = camp.npcs[i];
+    if (!npc) return;
+    var idadeInfo = rolarFaixaEtaria();
+    var tab62 = sortearTabela62(3);
+    var roupaSort = sortearRoupaCompleta();
+    npc.faixaEtaria = idadeInfo.texto;
+    npc.notas = '• Aparência (Tab. 6.2): ' + tab62.aparencia + '.\n' +
+      '• Roupas: ' + roupaSort + '\n' +
+      '• Personalidade (Tab. 6.2): ' + tab62.personalidade + '.';
+    renderNpcs(); agendarSalvar();
+    toast('Traços e roupas de ' + npc.nome + ' rerrolados!');
+  },
+  rolarTabela62Avulsa: function () {
+    var idadeInfo = rolarFaixaEtaria();
+    var tab62 = sortearTabela62(3);
+    var roupaSort = sortearRoupaCompleta();
+    var html = '<b style="color:var(--accent-bright)">Faixa Etária (1d20 = ' + idadeInfo.rolagem + '):</b> ' + esc(idadeInfo.texto) + '<br><br>' +
+      '<b style="color:var(--accent-bright)">Aparência (Tabela 6.2 - 3x 2d20):</b><br>' + esc(tab62.aparencia) + '<br><br>' +
+      '<b style="color:var(--accent-bright)">Vestimenta / Roupas:</b><br>' + esc(roupaSort) + '<br><br>' +
+      '<b style="color:var(--accent-bright)">Personalidade (Tabela 6.2 - 3x 2d20):</b><br>' + esc(tab62.personalidade);
+    mostrarModalInfo('Sorteio Rápido — Tabela 6.2 (p. 165) & Roupas', html);
+  },
+  addNpcVazio: function () {
+    camp.npcs.unshift({
+      nome: 'Novo NPC', ocupacao: 'Civil', faixaEtaria: 'Adulto (30 anos)', atitude: 'Indiferente',
+      vd: 10, pv: 10, pvMax: 10, def: 12,
+      periciasTxt: 'Diplomacia 1d20+5', ataqueNome: 'Desarmado', ataqueTeste: '1d20', ataqueDano: '1d3',
+      notas: '', relacoes: []
+    });
+    renderNpcs(); agendarSalvar();
+  },
+  delNpc: function (el) {
+    camp.npcs.splice(parseInt(el.getAttribute('data-i'), 10), 1);
+    renderNpcs(); agendarSalvar();
+  },
+  enviarNpcCombate: function (el) {
+    var npc = camp.npcs[parseInt(el.getAttribute('data-i'), 10)];
+    if (!npc) return;
+    camp.combatentes.push({
+      nome: npc.nome, tipo: 'NPC', ini: dFace(20), pv: num(npc.pv), pvMax: num(npc.pv), def: num(npc.def), conds: []
+    });
+    renderCombate(); agendarSalvar();
+    toast(npc.nome + ' enviado para o Combate!');
+  },
+  addRelacaoNpc: function (el) {
+    var i = parseInt(el.getAttribute('data-i'), 10);
+    camp.npcs[i].relacoes.push({player: 'Player X', pts: 1, obs: ''});
+    renderNpcs(); agendarSalvar();
+  },
+  setRelPts: function (el) {
+    var nIdx = parseInt(el.getAttribute('data-npc'), 10);
+    var rIdx = parseInt(el.getAttribute('data-rel'), 10);
+    var pts = parseInt(el.getAttribute('data-pts'), 10);
+    var rel = camp.npcs[nIdx].relacoes[rIdx];
+    rel.pts = (rel.pts === pts) ? 0 : pts;
+    renderNpcs(); agendarSalvar();
+  },
+  delRelacaoNpc: function (el) {
+    var nIdx = parseInt(el.getAttribute('data-npc'), 10);
+    var rIdx = parseInt(el.getAttribute('data-rel'), 10);
+    camp.npcs[nIdx].relacoes.splice(rIdx, 1);
+    renderNpcs(); agendarSalvar();
+  },
+  addLocal: function () {
+    camp.locais.push({nome: 'Novo Local', atmosfera: 'Escuro e silencioso', descricao: ''});
+    renderLocais(); agendarSalvar();
+  },
+  delLocal: function (el) {
+    camp.locais.splice(parseInt(el.getAttribute('data-i'), 10), 1);
+    renderLocais(); agendarSalvar();
+  },
+
+  addCena: function () {
+    camp.cenas.push({nome: 'Nova Cena de Investigação', urgenciaAtual: 4, urgenciaMax: 4, pistas: []});
+    renderCenas(); agendarSalvar();
+  },
+  delCena: function (el) {
+    camp.cenas.splice(parseInt(el.getAttribute('data-i'), 10), 1);
+    renderCenas(); agendarSalvar();
+  },
+  modUrgencia: function (el) {
+    var i = parseInt(el.getAttribute('data-i'), 10);
+    var d = parseInt(el.getAttribute('data-d'), 10);
+    var cn = camp.cenas[i];
+    cn.urgenciaAtual = Math.max(0, num(cn.urgenciaAtual) + d);
+    renderCenas(); agendarSalvar();
+  },
+  addPistaCena: function (el) {
+    var i = parseInt(el.getAttribute('data-i'), 10);
+    camp.cenas[i].pistas.push({titulo: 'Nova Pista', dt: 'Investigação DT 15', desc: '', revelada: false});
+    renderCenas(); agendarSalvar();
+  },
+  togglePistaRev: function (el) {
+    var c = parseInt(el.getAttribute('data-c'), 10);
+    var p = parseInt(el.getAttribute('data-p'), 10);
+    camp.cenas[c].pistas[p].revelada = !camp.cenas[c].pistas[p].revelada;
+    renderCenas(); agendarSalvar();
+  },
+  delPistaCena: function (el) {
+    var c = parseInt(el.getAttribute('data-c'), 10);
+    var p = parseInt(el.getAttribute('data-p'), 10);
+    camp.cenas[c].pistas.splice(p, 1);
+    renderCenas(); agendarSalvar();
+  },
+  rolarEventoInv: function () {
+    var d1 = dFace(6), d2 = dFace(6), soma = d1 + d2;
+    var ev = TABELA_EVENTOS_INV[soma];
+    mostrarModalInfo('Evento de Investigação (2d6 = ' + soma + ' [' + d1 + ', ' + d2 + '])', '<b style="color:var(--accent-bright)">' + esc(ev.n) + ':</b><br><br>' + esc(ev.d));
+  },
+
+  rolarTabelaMedo: function () {
+    var mod = parseInt($('mod-medo-cena').value, 10) || 0;
+    var d1 = dFace(10), d2 = dFace(10);
+    var soma = Math.min(20, d1 + d2 + mod);
+    var res = TABELA_MEDO[soma];
+    var html = '<b>Rolagem 2d10:</b> [' + d1 + ' + ' + d2 + ']' + (mod ? ' + ' + mod + ' (acumulado)' : '') + ' = <b style="color:var(--accent-bright)">' + (d1 + d2 + mod) + '</b><br><br>' +
+      '<b style="font-size:1.1rem; color:var(--accent-neon)">' + esc(res.n) + '</b><br>' + esc(res.d);
+    var box = $('box-ultimo-medo');
+    box.innerHTML = html;
+    box.style.display = 'block';
+    mostrarModalInfo('Efeito do Medo (SaH p. 88)', html);
+  },
+  rolarLoucuraNaoLetal: function () {
+    var r = dFace(6);
+    var txt = TABELA_LOUCURA_NL[r - 1];
+    var box = $('box-ultimo-medo');
+    box.innerHTML = '<b>Loucura Não Letal (1d6 = ' + r + '):</b><br>' + esc(txt);
+    box.style.display = 'block';
+    mostrarModalInfo('Loucura Não Letal (1d6 = ' + r + ')', esc(txt));
+  },
+  addSessaoLog: function () {
+    camp.sessoes.unshift({titulo: 'Sessão #' + (camp.sessoes.length + 1), notas: ''});
+    renderSessoes(); agendarSalvar();
+  },
+  delSessaoLog: function (el) {
+    camp.sessoes.splice(parseInt(el.getAttribute('data-i'), 10), 1);
+    renderSessoes(); agendarSalvar();
+  },
+
+  fecharInfo: function () { $('info-modal').style.display = 'none'; },
+  diceToggle: function () { var s = $('dice-sheet'); s.style.display = s.style.display === 'block' ? 'none' : 'block'; },
+  diceFechar: function () { $('dice-sheet').style.display = 'none'; },
+  rolarLivre: function () { rolarSomaLivre($('free-expr').value); },
+  rolarTesteLivre: function () { rolarTestePool($('free-expr').value); },
+  rapidoTeste: function (el) {
+    var ex = el.getAttribute('data-arg');
+    $('free-expr').value = ex;
+    rolarTestePool(ex);
+  },
+  rapidoDano: function (el) {
+    var ex = el.getAttribute('data-arg');
+    $('free-expr').value = ex;
+    rolarSomaLivre(ex, 'Dano (' + ex + ')');
+  },
+
+  backup: function () {
+    $('backup-text').value = JSON.stringify({app: 'dossie-mestre-op', campanhas: campanhas}, null, 2);
+    $('backup-modal').style.display = 'block';
+  },
+  bkClose: function () { $('backup-modal').style.display = 'none'; },
+  bkCopy: function () {
+    var t = $('backup-text'); t.select();
+    try { document.execCommand('copy'); toast('Copiado!'); } catch (e) {}
+  },
+  bkShare: function () {
+    var txt = JSON.stringify({app: 'dossie-mestre-op', campanhas: campanhas}, null, 2);
+    if (navigator.share) navigator.share({title: 'Backup Dossiê OP', text: txt}).catch(function () {});
+    else ACOES.bkCopy();
+  },
+  bkImport: function () {
+    try {
+      var p = JSON.parse($('backup-text').value);
+      var lista = p.campanhas || p;
+      if (Array.isArray(lista)) {
+        campanhas = lista.map(normalizarCamp);
+        salvarAgora();
+        renderListaCampanhas();
+        $('backup-modal').style.display = 'none';
+        toast('Campanhas restauradas!');
+      }
+    } catch (e) { alert('JSON inválido!'); }
+  }
+};
+
+function onInputField(e) {
+  var el = e.target;
+  if (!camp || !el.getAttribute) return;
+
+  var addCondIdx = el.getAttribute('data-add-cond');
+  if (addCondIdx !== null && e.type === 'change') {
+    var cIdx = parseInt(addCondIdx, 10);
+    if (camp.combatentes[cIdx] && el.value) {
+      adicionarCondicaoAoCombatente(camp.combatentes[cIdx], el.value);
+      el.value = '';
+      renderCombate(); agendarSalvar();
+    }
+    return;
+  }
+
+  var cf = el.getAttribute('data-cf');
+  var cl = el.getAttribute('data-cl');
+  var relNpc = el.getAttribute('data-rel-npc');
+  var pistaC = el.getAttribute('data-pista-c');
+
+  if (cf) {
+    camp[cf] = el.value;
+    if (cf === 'nome') $('camp-title').textContent = el.value || 'Campanha';
+    agendarSalvar();
+  } else if (cl) {
+    var i = parseInt(el.getAttribute('data-i'), 10);
+    var k = el.getAttribute('data-k');
+    var v = el.getAttribute('data-num') ? num(el.value) : el.value;
+    if (camp[cl] && camp[cl][i]) {
+      camp[cl][i][k] = v;
+      if (cl === 'combatentes' && e.type === 'change') renderCombate();
+      if (cl === 'npcs' && k === 'atitude' && e.type === 'change') renderNpcs();
+      agendarSalvar();
+    }
+  } else if (relNpc !== null) {
+    var nIdx = parseInt(relNpc, 10);
+    var rIdx = parseInt(el.getAttribute('data-rel-idx'), 10);
+    var rk = el.getAttribute('data-rel-k');
+    if (camp.npcs[nIdx] && camp.npcs[nIdx].relacoes[rIdx]) {
+      camp.npcs[nIdx].relacoes[rIdx][rk] = el.value;
+      agendarSalvar();
+    }
+  } else if (pistaC !== null) {
+    var cIdx2 = parseInt(pistaC, 10);
+    var pIdx = parseInt(el.getAttribute('data-pista-p'), 10);
+    var pk = el.getAttribute('data-pista-k');
+    if (camp.cenas[cIdx2] && camp.cenas[cIdx2].pistas[pIdx]) {
+      camp.cenas[cIdx2].pistas[pIdx][pk] = el.value;
+      agendarSalvar();
+    }
+  }
+}
+
+document.addEventListener('click', function (e) {
+  var el = e.target.closest ? e.target.closest('[data-act]') : null;
+  if (!el) return;
+  var fn = ACOES[el.getAttribute('data-act')];
+  if (fn) fn(el);
+});
+document.addEventListener('input', onInputField);
+document.addEventListener('change', onInputField);
+
+var bkFile = $('bk-file');
+if (bkFile) {
+  bkFile.addEventListener('change', function () {
+    var f = this.files && this.files[0]; if (!f) return;
+    var rd = new FileReader();
+    rd.onload = function () {
+      $('backup-text').value = String(rd.result);
+      ACOES.bkImport();
+    };
+    rd.readAsText(f);
+    this.value = '';
+  });
+}
+
+var temaSalvo = localStorage.getItem('dossie_op_theme') || 'medo';
+document.documentElement.setAttribute('data-theme', temaSalvo);
+
+campanhas = carregar().map(normalizarCamp);
+renderListaCampanhas();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').catch(function () {});
+  });
+}
+})();
+</script>
+</body>
+</html>
